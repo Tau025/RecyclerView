@@ -10,7 +10,6 @@ import java.util.Comparator;
 import com.devtau.recyclerview.database.tables.DummyItemsTable;
 import com.devtau.recyclerview.recycler_view_frag.SortBy;
 import com.devtau.recyclerview.util.Util;
-
 import static com.devtau.recyclerview.database.tables.DummyItemsTable.*;
 
 public class DummyItem implements Parcelable{

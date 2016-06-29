@@ -4,7 +4,6 @@
     <string name="new_item">New item:</string>
 
     <string name="sort">Sort:</string>
-    <string name="date">date</string>
     <string name="price">price</string>
     <string name="description">description</string>
 
@@ -13,7 +12,6 @@
     <string name="first_old">first old</string>
     <string name="first_higher_price">first higher price</string>
     <string name="first_lower_price">first lower price</string>
-    <string name="alphabetical">alphabetical</string>
-    <string name="rev_alphabetical">rev. alphabetical</string>
-
+    <string name="alphabetical">A - Z</string>
+    <string name="rev_alphabetical">Z - A</string>
 </resources>

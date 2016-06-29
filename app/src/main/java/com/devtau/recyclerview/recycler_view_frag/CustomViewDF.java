@@ -47,7 +47,6 @@ public class CustomViewDF extends DialogFragment {
         etDescription = (EditText) rootView.findViewById(R.id.etDescription);
 
         builder.setView(rootView)
-                // Add action buttons
                 .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
@@ -62,7 +61,6 @@ public class CustomViewDF extends DialogFragment {
                                 e.printStackTrace();
                             }
                             String description = etDescription.getText().toString();
-                            //new DummyItem невозможно реализовать дженериком
                             DummyItem newItem = new DummyItem(now, price, description);
 
                             //передадим собранный объект на обработку слушателю
@@ -76,8 +74,7 @@ public class CustomViewDF extends DialogFragment {
         return builder.create();
     }
 
-    public interface onCustomViewDFListener {
-        // TODO: настройте интерфейс взаимодействия с диалогом
-        void onAddNewItemDialogResult(DummyItem newItem);
+    public interface onCustomViewDFListener<T> {
+        void onAddNewItemDialogResult(T newItem);
     }
 }

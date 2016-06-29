@@ -2,6 +2,7 @@ package com.devtau.recyclerview.recycler_view_frag;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -13,9 +14,9 @@ import com.devtau.recyclerview.util.Constants;
 import com.devtau.recyclerview.util.Logger;
 import java.util.ArrayList;
 
-public class ItemFragment extends Fragment implements
-        SortAndAddFragment.OnSortAndAddFragmentListener,
-        RVFragment.OnRVFragmentListener {
+public class ItemFragment<DummyItem extends Parcelable> extends Fragment implements
+        SortAndAddFragment.OnSortAndAddFragmentListener<DummyItem>,
+        RVFragment.OnRVFragmentListener<DummyItem> {
     public static final String ARG_ITEMS_LIST = "itemsList";
     public static final String ARG_COLUMN_COUNT = "columnCount";
     public static final String ARG_LIST_ITEM_LAYOUT_ID = "listItemLayoutId";
@@ -29,19 +30,20 @@ public class ItemFragment extends Fragment implements
     //Обязательный пустой конструктор
     public ItemFragment() { }
 
-    public static ItemFragment newInstance(ArrayList<DummyItem> itemsList, int columnCount,
-                                           int listItemLayoutId, SortBy sortBy) {
-        ItemFragment fragment = new ItemFragment();
-        Bundle args = new Bundle();
-
-        args.putParcelableArrayList(ARG_ITEMS_LIST, itemsList);
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        args.putInt(ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
-        args.putSerializable(ARG_SORT_BY, sortBy);
-
-        fragment.setArguments(args);
-        return fragment;
-    }
+    //мы не можем использовать статический метод для создания фрагмента с дженериками
+//    public static ItemFragment newInstance(ArrayList<DummyItem> itemsList, int columnCount,
+//                                           int listItemLayoutId, SortBy sortBy) {
+//        ItemFragment fragment = new ItemFragment();
+//        Bundle args = new Bundle();
+//
+//        args.putParcelableArrayList(ARG_ITEMS_LIST, itemsList);
+//        args.putInt(ARG_COLUMN_COUNT, columnCount);
+//        args.putInt(ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
+//        args.putSerializable(ARG_SORT_BY, sortBy);
+//
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     public void onAttach(Context context) {
@@ -78,12 +80,34 @@ public class ItemFragment extends Fragment implements
             sortBy = (SortBy) getArguments().getSerializable(ARG_SORT_BY);
         }
 
-        sortAndAddFragment = SortAndAddFragment.newInstance(sortBy);
-        rvFragment = RVFragment.newInstance(itemsList, columnCount, listItemLayoutId, sortBy);
+        sortAndAddFragment = createSortAndAddFragment(sortBy);
+        rvFragment = createRVFragment(itemsList, columnCount, listItemLayoutId, sortBy);
         addFragmentToLayout(R.id.sort_and_add_placeholder, sortAndAddFragment);
         addFragmentToLayout(R.id.recycler_view_placeholder, rvFragment);
 
         return view;
+    }
+
+    public SortAndAddFragment createSortAndAddFragment(SortBy sortBy) {
+        SortAndAddFragment fragment = new SortAndAddFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ItemFragment.ARG_SORT_BY, sortBy);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public RVFragment createRVFragment(ArrayList<DummyItem> itemsList, int columnCount,
+                                         int listItemLayoutId, SortBy sortBy) {
+        RVFragment fragment = new RVFragment();
+        Bundle args = new Bundle();
+
+        args.putParcelableArrayList(ItemFragment.ARG_ITEMS_LIST, itemsList);
+        args.putInt(ItemFragment.ARG_COLUMN_COUNT, columnCount);
+        args.putInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
+        args.putSerializable(ItemFragment.ARG_SORT_BY, sortBy);
+
+        fragment.setArguments(args);
+        return fragment;
     }
 
     private void addFragmentToLayout(int placeholderID, Fragment fragment){
@@ -158,7 +182,7 @@ public class ItemFragment extends Fragment implements
         listener.onListItemClickDelete(item);
     }
 
-    public interface OnItemFragmentListener {
+    public interface OnItemFragmentListener<DummyItem> {
         // TODO: настройте проброс интерфейса взаимодействия со списком
         void onListItemClick(DummyItem item);
         void onListItemClickDelete(DummyItem item);

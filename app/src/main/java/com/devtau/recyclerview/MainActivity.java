@@ -13,7 +13,7 @@ import com.devtau.recyclerview.util.Constants;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
-        ItemFragment.OnItemFragmentListener {
+        ItemFragment.OnItemFragmentListener<DummyItem> {
     private static final String SORT_BY_EXTRA = "SortBy";
     private MyRecyclerView myRecyclerView;
     //рекомендуется хранить ссылку на dataSource, если таблиц больше одной

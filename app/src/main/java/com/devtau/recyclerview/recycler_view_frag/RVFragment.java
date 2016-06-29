@@ -2,6 +2,7 @@ package com.devtau.recyclerview.recycler_view_frag;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,14 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.devtau.recyclerview.R;
-import com.devtau.recyclerview.model.DummyItem;
 import com.devtau.recyclerview.util.Constants;
 import com.devtau.recyclerview.util.Logger;
 import java.util.ArrayList;
 /**
  * Фрагмент для самого списка
  */
-public class RVFragment extends Fragment {
+public class RVFragment<T extends Parcelable> extends Fragment {
     private OnRVFragmentListener listener;
     private MyItemRVAdapter adapter;
     private RecyclerView recyclerView;
@@ -26,19 +26,19 @@ public class RVFragment extends Fragment {
     public RVFragment() { }
 
     //мы не можем использовать статический метод для создания фрагмента с дженериками
-    public static RVFragment newInstance(ArrayList<DummyItem> itemsList, int columnCount,
-                                           int listItemLayoutId, SortBy sortBy) {
-        RVFragment fragment = new RVFragment();
-        Bundle args = new Bundle();
-
-        args.putParcelableArrayList(ItemFragment.ARG_ITEMS_LIST, itemsList);
-        args.putInt(ItemFragment.ARG_COLUMN_COUNT, columnCount);
-        args.putInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
-        args.putSerializable(ItemFragment.ARG_SORT_BY, sortBy);
-
-        fragment.setArguments(args);
-        return fragment;
-    }
+//    public static RVFragment newInstance(ArrayList<T> itemsList, int columnCount,
+//                                           int listItemLayoutId, SortBy sortBy) {
+//        RVFragment fragment = new RVFragment();
+//        Bundle args = new Bundle();
+//
+//        args.putParcelableArrayList(ItemFragment.ARG_ITEMS_LIST, itemsList);
+//        args.putInt(ItemFragment.ARG_COLUMN_COUNT, columnCount);
+//        args.putInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
+//        args.putSerializable(ItemFragment.ARG_SORT_BY, sortBy);
+//
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     public void onAttach(Context context) {
@@ -64,7 +64,7 @@ public class RVFragment extends Fragment {
 
         //рекомендовано читать аргументы из бандла не здесь, а в onCreate, но тогда нам нужно создавать
         //все переменные на уровне фрагмента, а не локальные для метода, которые мы сразу отдаем в адаптер
-        ArrayList<DummyItem> itemsList = new ArrayList<>();
+        ArrayList<T> itemsList = new ArrayList<>();
         int columnCount = 1;
         int listItemLayoutId = R.layout.list_item;
         SortBy sortBy = Constants.DEFAULT_SORT_BY;
@@ -95,7 +95,7 @@ public class RVFragment extends Fragment {
 
     //метод публичный, т.к. при работе с бд _id хранимого объекта создается только после
     //вставки записи в бд, а к ней у списка доступа нет
-    public void addItemToList(DummyItem item, SortBy sortBy) {
+    public void addItemToList(T item, SortBy sortBy) {
         int position = adapter.addItemToList(item, sortBy);
         recyclerView.scrollToPosition(position);
     }
@@ -108,11 +108,11 @@ public class RVFragment extends Fragment {
         adapter.sortAndNotify(sortBy);
     }
 
-    public void removeItemFromList(DummyItem item) {
+    public void removeItemFromList(T item) {
         adapter.removeItemFromList(item);
     }
 
-    public void setList(ArrayList<DummyItem> itemsList){
+    public void setList(ArrayList<T> itemsList){
         adapter.setList(itemsList);
     }
 
@@ -123,9 +123,9 @@ public class RVFragment extends Fragment {
         listener = null;
     }
 
-    public interface OnRVFragmentListener {
+    public interface OnRVFragmentListener<T> {
         // TODO: настройте интерфейс взаимодействия со списком
-        void onListItemClick(DummyItem item);
-        void onListItemClickDelete(DummyItem item);
+        void onListItemClick(T item);
+        void onListItemClickDelete(T item);
     }
 }

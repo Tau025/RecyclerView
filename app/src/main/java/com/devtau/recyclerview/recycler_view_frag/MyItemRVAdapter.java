@@ -14,14 +14,14 @@ import com.devtau.recyclerview.util.Util;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class MyItemRVAdapter extends RecyclerView.Adapter<MyItemRVAdapter.ViewHolder> {
+public class MyItemRVAdapter<T> extends RecyclerView.Adapter<MyItemRVAdapter.ViewHolder> {
     //TODO: выберите класс хранимого объекта
-    private ArrayList<DummyItem> itemsList;
+    private ArrayList<T> itemsList;
     private final int listItemLayoutId;
     private final OnRVFragmentListener listener;
     private int positionInList = -1;
 
-    public MyItemRVAdapter(ArrayList<DummyItem> itemsList, int listItemLayoutId, SortBy sortBy,
+    public MyItemRVAdapter(ArrayList<T> itemsList, int listItemLayoutId, SortBy sortBy,
                            OnRVFragmentListener listener) {
         Logger.d("MyItemRVAdapter constructor");
         this.itemsList = itemsList;
@@ -42,9 +42,11 @@ public class MyItemRVAdapter extends RecyclerView.Adapter<MyItemRVAdapter.ViewHo
         holder.item = itemsList.get(position);
         //TODO: настройте onBindViewHolder
         //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
-        ((TextView) holder.view.findViewById(R.id.price)).setText(String.valueOf(holder.item.getPrice()));
-        ((TextView) holder.view.findViewById(R.id.description)).setText(holder.item.getDescription());
-        String dateString = Util.getStringDateTimeFromCal(holder.item.getDate());
+        DummyItem item = (DummyItem) holder.item;
+
+        ((TextView) holder.view.findViewById(R.id.price)).setText(String.valueOf(item.getPrice()));
+        ((TextView) holder.view.findViewById(R.id.description)).setText(item.getDescription());
+        String dateString = Util.getStringDateTimeFromCal(item.getDate());
         ((TextView) holder.view.findViewById(R.id.date)).setText(dateString);
         ImageButton btnDelete = ((ImageButton) holder.view.findViewById(R.id.btnDelete));
 
@@ -76,12 +78,12 @@ public class MyItemRVAdapter extends RecyclerView.Adapter<MyItemRVAdapter.ViewHo
 
 
     //публичные методы редактирования хранимого списка
-    public void setList(ArrayList<DummyItem> itemsList){
+    public void setList(ArrayList<T> itemsList){
         this.itemsList = itemsList;
         notifyDataSetChanged();
     }
 
-    public int addItemToList(DummyItem item, SortBy sortBy) {
+    public int addItemToList(T item, SortBy sortBy) {
         itemsList.add(item);
         sort(sortBy);
         int position = itemsList.indexOf(item);
@@ -89,7 +91,7 @@ public class MyItemRVAdapter extends RecyclerView.Adapter<MyItemRVAdapter.ViewHo
         return position;
     }
 
-    public void removeItemFromList(DummyItem item){
+    public void removeItemFromList(T item){
         //для корректного удаления элемента из списка реализуйте equals и hashCode у класса хранимого объекта
         itemsList.remove(item);
         if(positionInList != -1) {
@@ -98,19 +100,19 @@ public class MyItemRVAdapter extends RecyclerView.Adapter<MyItemRVAdapter.ViewHo
     }
 
     public void sort(SortBy sortBy) {
-        Collections.sort(itemsList, DummyItem.Comparators.getProperComparator(sortBy));
+//        Collections.sort(itemsList, DummyItem.Comparators.getProperComparator(sortBy));
     }
 
     public void sortAndNotify(SortBy sortBy) {
-        Collections.sort(itemsList, DummyItem.Comparators.getProperComparator(sortBy));
+//        Collections.sort(itemsList, DummyItem.Comparators.getProperComparator(sortBy));
         notifyDataSetChanged();
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder<T> extends RecyclerView.ViewHolder {
         //пока ViewHolder является вложенным классом, адаптер имеет доступ к его private переменным
         private final View view;
-        private DummyItem item;
+        private T item;
 
         public ViewHolder(View view) {
             super(view);

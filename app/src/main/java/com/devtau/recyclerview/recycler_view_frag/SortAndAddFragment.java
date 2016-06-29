@@ -12,27 +12,27 @@ import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.Spinner;
 import com.devtau.recyclerview.R;
-import com.devtau.recyclerview.model.DummyItem;
 import com.devtau.recyclerview.util.Constants;
 import com.devtau.recyclerview.util.Logger;
 /**
  * Фрагмент для опционально добавляемых контролов сортировки и вставки новой записи в список
  */
-public class SortAndAddFragment extends Fragment implements
-        CustomViewDF.onCustomViewDFListener  {
+public class SortAndAddFragment<T> extends Fragment implements
+        CustomViewDF.onCustomViewDFListener<T>  {
     private OnSortAndAddFragmentListener listener;
     private Spinner spnSort;
 
     //Обязательный пустой конструктор
     public SortAndAddFragment() { }
 
-    public static SortAndAddFragment newInstance(SortBy sortBy) {
-        SortAndAddFragment fragment = new SortAndAddFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ItemFragment.ARG_SORT_BY, sortBy);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    //мы не можем использовать статический метод для создания фрагмента с дженериками
+//    public static SortAndAddFragment newInstance(SortBy sortBy) {
+//        SortAndAddFragment fragment = new SortAndAddFragment();
+//        Bundle args = new Bundle();
+//        args.putSerializable(ItemFragment.ARG_SORT_BY, sortBy);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     public void onAttach(Context context) {
@@ -99,15 +99,15 @@ public class SortAndAddFragment extends Fragment implements
     }
 
     @Override
-    public void onAddNewItemDialogResult(DummyItem newItem) {
+    public void onAddNewItemDialogResult(T newItem) {
         listener.onAddNewItemDialogResult(newItem);
     }
 
 
-    public interface OnSortAndAddFragmentListener {
+    public interface OnSortAndAddFragmentListener<T> {
         // TODO: настройте проброс интерфейса взаимодействия с диалогом и интерфейс спиннера
         void onSpinnerItemSelected(SortBy selectedSortBy);
-        void onAddNewItemDialogResult(DummyItem newItem);
+        void onAddNewItemDialogResult(T newItem);
     }
 
 
