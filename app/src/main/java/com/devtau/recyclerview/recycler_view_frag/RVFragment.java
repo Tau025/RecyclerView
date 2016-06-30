@@ -24,21 +24,7 @@ public class RVFragment<T extends Parcelable> extends Fragment {
 
     //Обязательный пустой конструктор
     public RVFragment() { }
-
-    //мы не можем использовать статический метод для создания фрагмента с дженериками
-//    public static RVFragment newInstance(ArrayList<T> itemsList, int columnCount,
-//                                           int listItemLayoutId, SortBy sortBy) {
-//        RVFragment fragment = new RVFragment();
-//        Bundle args = new Bundle();
-//
-//        args.putParcelableArrayList(ItemFragment.ARG_ITEMS_LIST, itemsList);
-//        args.putInt(ItemFragment.ARG_COLUMN_COUNT, columnCount);
-//        args.putInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
-//        args.putSerializable(ItemFragment.ARG_SORT_BY, sortBy);
-//
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    //мы не можем использовать статический метод newInstance() для создания фрагмента с дженериками
 
     @Override
     public void onAttach(Context context) {
@@ -123,7 +109,7 @@ public class RVFragment<T extends Parcelable> extends Fragment {
         listener = null;
     }
 
-    public interface OnRVFragmentListener<T> {
+    public interface OnRVFragmentListener<T extends Parcelable> {
         // TODO: настройте интерфейс взаимодействия со списком
         void onListItemClick(T item);
         void onListItemClickDelete(T item);

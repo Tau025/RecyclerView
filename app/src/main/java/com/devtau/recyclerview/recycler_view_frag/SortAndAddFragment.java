@@ -2,6 +2,7 @@ package com.devtau.recyclerview.recycler_view_frag;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,22 +18,14 @@ import com.devtau.recyclerview.util.Logger;
 /**
  * Фрагмент для опционально добавляемых контролов сортировки и вставки новой записи в список
  */
-public class SortAndAddFragment<T> extends Fragment implements
-        CustomViewDF.onCustomViewDFListener<T>  {
+public class SortAndAddFragment<T extends Parcelable> extends Fragment implements
+        AddNewItemDF.onAddNewItemDFListener<T> {
     private OnSortAndAddFragmentListener listener;
     private Spinner spnSort;
 
     //Обязательный пустой конструктор
     public SortAndAddFragment() { }
-
-    //мы не можем использовать статический метод для создания фрагмента с дженериками
-//    public static SortAndAddFragment newInstance(SortBy sortBy) {
-//        SortAndAddFragment fragment = new SortAndAddFragment();
-//        Bundle args = new Bundle();
-//        args.putSerializable(ItemFragment.ARG_SORT_BY, sortBy);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    //мы не можем использовать статический метод newInstance() для создания фрагмента с дженериками
 
     @Override
     public void onAttach(Context context) {
@@ -85,7 +78,7 @@ public class SortAndAddFragment<T> extends Fragment implements
                 @Override
                 public void onClick(View view) {
                     Logger.d("click: ");
-                    new CustomViewDF().show(getChildFragmentManager(), CustomViewDF.FRAGMENT_TAG);
+                    new AddNewItemDF().show(getChildFragmentManager(), AddNewItemDF.FRAGMENT_TAG);
                 }
             });
         }
@@ -104,7 +97,7 @@ public class SortAndAddFragment<T> extends Fragment implements
     }
 
 
-    public interface OnSortAndAddFragmentListener<T> {
+    public interface OnSortAndAddFragmentListener<T extends Parcelable> {
         // TODO: настройте проброс интерфейса взаимодействия с диалогом и интерфейс спиннера
         void onSpinnerItemSelected(SortBy selectedSortBy);
         void onAddNewItemDialogResult(T newItem);

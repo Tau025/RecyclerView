@@ -9,14 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.devtau.recyclerview.R;
-import com.devtau.recyclerview.model.DummyItem;
 import com.devtau.recyclerview.util.Constants;
 import com.devtau.recyclerview.util.Logger;
 import java.util.ArrayList;
-
-public class ItemFragment<DummyItem extends Parcelable> extends Fragment implements
-        SortAndAddFragment.OnSortAndAddFragmentListener<DummyItem>,
-        RVFragment.OnRVFragmentListener<DummyItem> {
+/**
+ * Фрагмент обобщающий сортировку, вставку новой записи с отображением самого списка
+ */
+public class ItemFragment<T extends Parcelable> extends Fragment implements
+        SortAndAddFragment.OnSortAndAddFragmentListener<T>,
+        RVFragment.OnRVFragmentListener<T> {
     public static final String ARG_ITEMS_LIST = "itemsList";
     public static final String ARG_COLUMN_COUNT = "columnCount";
     public static final String ARG_LIST_ITEM_LAYOUT_ID = "listItemLayoutId";
@@ -29,21 +30,7 @@ public class ItemFragment<DummyItem extends Parcelable> extends Fragment impleme
 
     //Обязательный пустой конструктор
     public ItemFragment() { }
-
-    //мы не можем использовать статический метод для создания фрагмента с дженериками
-//    public static ItemFragment newInstance(ArrayList<DummyItem> itemsList, int columnCount,
-//                                           int listItemLayoutId, SortBy sortBy) {
-//        ItemFragment fragment = new ItemFragment();
-//        Bundle args = new Bundle();
-//
-//        args.putParcelableArrayList(ARG_ITEMS_LIST, itemsList);
-//        args.putInt(ARG_COLUMN_COUNT, columnCount);
-//        args.putInt(ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
-//        args.putSerializable(ARG_SORT_BY, sortBy);
-//
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    //мы не можем использовать статический метод newInstance() для создания фрагмента с дженериками
 
     @Override
     public void onAttach(Context context) {
@@ -68,7 +55,7 @@ public class ItemFragment<DummyItem extends Parcelable> extends Fragment impleme
 
         //рекомендовано читать аргументы из бандла не здесь, а в onCreate, но тогда нам нужно создавать
         //все переменные на уровне фрагмента, а не локальные для метода, которые мы сразу отдаем в адаптер
-        ArrayList<DummyItem> itemsList = new ArrayList<>();
+        ArrayList<T> itemsList = new ArrayList<>();
         int columnCount = 1;
         int listItemLayoutId = R.layout.list_item;
         SortBy sortBy = Constants.DEFAULT_SORT_BY;
@@ -96,7 +83,7 @@ public class ItemFragment<DummyItem extends Parcelable> extends Fragment impleme
         return fragment;
     }
 
-    public RVFragment createRVFragment(ArrayList<DummyItem> itemsList, int columnCount,
+    public RVFragment createRVFragment(ArrayList<T> itemsList, int columnCount,
                                          int listItemLayoutId, SortBy sortBy) {
         RVFragment fragment = new RVFragment();
         Bundle args = new Bundle();
@@ -125,7 +112,7 @@ public class ItemFragment<DummyItem extends Parcelable> extends Fragment impleme
 
     //метод публичный, т.к. при работе с бд _id хранимого объекта создается только после
     //вставки записи в бд, а к ней у списка доступа нет
-    public void addItemToList(DummyItem item) {
+    public void addItemToList(T item) {
         rvFragment.addItemToList(item, sortBy);
     }
 
@@ -137,11 +124,11 @@ public class ItemFragment<DummyItem extends Parcelable> extends Fragment impleme
         rvFragment.sort(sortBy);
     }
 
-    public void removeItemFromList(DummyItem item) {
+    public void removeItemFromList(T item) {
         rvFragment.removeItemFromList(item);
     }
 
-    public void setList(ArrayList<DummyItem> itemsList){
+    public void setList(ArrayList<T> itemsList){
         rvFragment.setList(itemsList);
     }
 
@@ -162,7 +149,7 @@ public class ItemFragment<DummyItem extends Parcelable> extends Fragment impleme
     }
 
     @Override
-    public void onAddNewItemDialogResult(DummyItem newItem) {
+    public void onAddNewItemDialogResult(T newItem) {
         listener.onAddNewItemDialogResult(newItem);
     }
 
@@ -170,22 +157,22 @@ public class ItemFragment<DummyItem extends Parcelable> extends Fragment impleme
     //можно было бы настроить прямую реализацию интерфейса взаимодействия с его дочерним списком активностью
     //однако ItemFragment может быть частью другого фрагмента, ссылку на который мы не можем получить
     @Override
-    public void onListItemClick(DummyItem item) {
+    public void onListItemClick(T item) {
         listener.onListItemClick(item);
     }
 
     @Override
-    public void onListItemClickDelete(DummyItem item) {
+    public void onListItemClickDelete(T item) {
         //обратите внимание, что удаление из списка обрабатывается внутри списка
         //клиенту нужно только передать инструкцию в бд
         rvFragment.removeItemFromList(item);
         listener.onListItemClickDelete(item);
     }
 
-    public interface OnItemFragmentListener<DummyItem> {
+    public interface OnItemFragmentListener<T extends Parcelable> {
         // TODO: настройте проброс интерфейса взаимодействия со списком
-        void onListItemClick(DummyItem item);
-        void onListItemClickDelete(DummyItem item);
-        void onAddNewItemDialogResult(DummyItem newItem);
+        void onListItemClick(T item);
+        void onListItemClickDelete(T item);
+        void onAddNewItemDialogResult(T newItem);
     }
 }

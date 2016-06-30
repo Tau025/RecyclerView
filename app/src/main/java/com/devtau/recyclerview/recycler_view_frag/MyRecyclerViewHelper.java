@@ -7,14 +7,18 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.ArrayList;
 /**
  * Клиент передает указанные параметры конструктора,
- * выбирает класс хранимого объекта и настраивает onBindViewHolder()
+ * настраивает MyItemRVAdapter.onBindViewHolder() и AddNewItemDF.onCreateDialog()
  * при переносе в новый проект не забудьте взять R.layout.fragment_recycler_view
+ * класс хранимого объекта должен:
+ * переопределить методы equals() и hashCode() - для корректного удаления элемента из списка
+ * реализовать Parcelable
+ * для корректного удаления элемента из списка реализуйте equals и hashCode у класса хранимого объекта
  */
-public class MyRecyclerView<T extends Parcelable> {
+public class MyRecyclerViewHelper<T extends Parcelable> {
     private ItemFragment itemFragment;
 
-    public MyRecyclerView(ArrayList<T> itemsList, int columnCount, int listItemLayoutId,
-                          SortBy sortBy) {
+    public MyRecyclerViewHelper(ArrayList<T> itemsList, int columnCount, int listItemLayoutId,
+                                SortBy sortBy) {
         itemFragment = createItemFragment(itemsList, columnCount, listItemLayoutId, sortBy);
     }
 

@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -14,11 +15,11 @@ import com.devtau.recyclerview.model.DummyItem;
 import com.devtau.recyclerview.util.Logger;
 import java.util.Calendar;
 
-public class CustomViewDF extends DialogFragment {
-    public static final String FRAGMENT_TAG = "CustomViewDF";
+public class AddNewItemDF extends DialogFragment {
+    public static final String FRAGMENT_TAG = "AddNewItemDF";
     private EditText etPrice;
     private EditText etDescription;
-    private onCustomViewDFListener listener;
+    private onAddNewItemDFListener listener;
 
     @Override
     public void onAttach(Context context) {
@@ -27,12 +28,12 @@ public class CustomViewDF extends DialogFragment {
         super.onAttach(context);
         try {
             //проверим, реализован ли нужный интерфейс родительским фрагментом или активностью
-            listener = (onCustomViewDFListener) getParentFragment();
+            listener = (onAddNewItemDFListener) getParentFragment();
             if (listener == null) {
-                listener = (onCustomViewDFListener) context;
+                listener = (onAddNewItemDFListener) context;
             }
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement onCustomViewDFListener");
+            throw new ClassCastException(context.toString() + " must implement onAddNewItemDFListener");
         }
     }
 
@@ -47,25 +48,22 @@ public class CustomViewDF extends DialogFragment {
         etDescription = (EditText) rootView.findViewById(R.id.etDescription);
 
         builder.setView(rootView)
-                .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        if(etPrice != null && etDescription != null) {
-                            // TODO: настройте создание нового хранимого объекта
-                            //подготовим компоненты и объединим их в новый объект
-                            Calendar now = Calendar.getInstance();
-                            int price = 0;
-                            try {
-                                price = Integer.parseInt(etPrice.getText().toString());
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace();
-                            }
-                            String description = etDescription.getText().toString();
-                            DummyItem newItem = new DummyItem(now, price, description);
-
-                            //передадим собранный объект на обработку слушателю
-                            listener.onAddNewItemDialogResult(newItem);
+                .setPositiveButton(R.string.add, (dialog, id) -> {
+                    if(etPrice != null && etDescription != null) {
+                        // TODO: настройте создание нового хранимого объекта
+                        //подготовим компоненты и объединим их в новый объект
+                        Calendar now = Calendar.getInstance();
+                        int price = 0;
+                        try {
+                            price = Integer.parseInt(etPrice.getText().toString());
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
                         }
+                        String description = etDescription.getText().toString();
+                        DummyItem newItem = new DummyItem(now, price, description);
+
+                        //передадим собранный объект на обработку слушателю
+                        listener.onAddNewItemDialogResult(newItem);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -74,7 +72,7 @@ public class CustomViewDF extends DialogFragment {
         return builder.create();
     }
 
-    public interface onCustomViewDFListener<T> {
+    public interface onAddNewItemDFListener<T extends Parcelable> {
         void onAddNewItemDialogResult(T newItem);
     }
 }

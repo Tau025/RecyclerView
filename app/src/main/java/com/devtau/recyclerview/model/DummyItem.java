@@ -130,58 +130,40 @@ public class DummyItem implements Parcelable{
     //компараторы необходимы, если вы собираетесь сортировать лист объектов этого класса
     //ответ <0 говорит о том, что сравнение не прошло проверку и нужна перестановка
     public static class Comparators {
-        public static Comparator<DummyItem> FIRST_FRESH = new Comparator<DummyItem>() {
-            @Override
-            public int compare(DummyItem first, DummyItem second) {
-                long firstLong = first.getDate().getTimeInMillis();
-                long secondLong = second.getDate().getTimeInMillis();
-                int result;
-                if(secondLong < firstLong) result = -1;
-                else if(firstLong == secondLong) result = 0;
-                else result = 1;
-                return result;
-            }
+        public static Comparator<DummyItem> FIRST_FRESH = (first, second) -> {
+            long firstLong = first.getDate().getTimeInMillis();
+            long secondLong = second.getDate().getTimeInMillis();
+            int result;
+            if(secondLong < firstLong) result = -1;
+            else if(firstLong == secondLong) result = 0;
+            else result = 1;
+            return result;
         };
-        public static Comparator<DummyItem> FIRST_OLD = new Comparator<DummyItem>() {
-            @Override
-            public int compare(DummyItem first, DummyItem second) {
-                long firstLong = first.getDate().getTimeInMillis();
-                long secondLong = second.getDate().getTimeInMillis();
-                int result;
-                if(firstLong < secondLong) result = -1;
-                else if(firstLong == secondLong) result = 0;
-                else result = 1;
-                return result;
-            }
+        public static Comparator<DummyItem> FIRST_OLD = (first, second) -> {
+            long firstLong = first.getDate().getTimeInMillis();
+            long secondLong = second.getDate().getTimeInMillis();
+            int result;
+            if(firstLong < secondLong) result = -1;
+            else if(firstLong == secondLong) result = 0;
+            else result = 1;
+            return result;
         };
-        public static Comparator<DummyItem> FIRST_HIGHER_PRICE = new Comparator<DummyItem>() {
-            @Override
-            public int compare(DummyItem first, DummyItem second) {
-                return second.getPrice() - first.getPrice();
-            }
-        };
-        public static Comparator<DummyItem> FIRST_LOWER_PRICE = new Comparator<DummyItem>() {
-            @Override
-            public int compare(DummyItem first, DummyItem second) {
-                return first.getPrice() - second.getPrice();
-            }
-        };
-        public static Comparator<DummyItem> ALPHABETICAL = new Comparator<DummyItem>() {
-            @Override
-            public int compare(DummyItem first, DummyItem second) {
-                return first.getDescription().compareTo(second.getDescription());
-            }
-        };
-        public static Comparator<DummyItem> REV_ALPHABETICAL = new Comparator<DummyItem>() {
-            @Override
-            public int compare(DummyItem first, DummyItem second) {
-                return second.getDescription().compareTo(first.getDescription());
-            }
-        };
+        public static Comparator<DummyItem> FIRST_HIGHER_PRICE =
+                (first, second) -> second.getPrice() - first.getPrice();
+        public static Comparator<DummyItem> FIRST_LOWER_PRICE =
+                (first, second) -> first.getPrice() - second.getPrice();
+        public static Comparator<DummyItem> ALPHABETICAL =
+                (first, second) -> first.getDescription().compareTo(second.getDescription());
+        public static Comparator<DummyItem> REV_ALPHABETICAL =
+                (first, second) -> second.getDescription().compareTo(first.getDescription());
 
-        //альтернатива на лямбде
-//        public static final Comparator<DummyItem> PRICE_2 =
-//                (DummyItem first, DummyItem second) -> first.getPrice() - second.getPrice();
+        //альтернатива без лямбды
+//        public static Comparator<DummyItem> FIRST_LOWER_PRICE = new Comparator<DummyItem>() {
+//            @Override
+//            public int compare(DummyItem first, DummyItem second) {
+//                return first.getPrice() - second.getPrice();
+//            }
+//        };
 
         public static Comparator<DummyItem> getProperComparator(SortBy sortBy) {
             switch (sortBy) {

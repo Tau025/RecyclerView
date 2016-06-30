@@ -7,7 +7,7 @@ import com.devtau.recyclerview.database.DataSource;
 import com.devtau.recyclerview.database.sources.DummyItemsSource;
 import com.devtau.recyclerview.model.DummyItem;
 import com.devtau.recyclerview.recycler_view_frag.ItemFragment;
-import com.devtau.recyclerview.recycler_view_frag.MyRecyclerView;
+import com.devtau.recyclerview.recycler_view_frag.MyRecyclerViewHelper;
 import com.devtau.recyclerview.recycler_view_frag.SortBy;
 import com.devtau.recyclerview.util.Constants;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements
         ItemFragment.OnItemFragmentListener<DummyItem> {
     private static final String SORT_BY_EXTRA = "SortBy";
-    private MyRecyclerView myRecyclerView;
+    private MyRecyclerViewHelper myRecyclerViewHelper;
     //рекомендуется хранить ссылку на dataSource, если таблиц больше одной
     private DummyItemsSource dummyItemsSource;
 
@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity implements
         if(savedInstanceState != null) {
             sortBy = (SortBy) savedInstanceState.getSerializable(SORT_BY_EXTRA);
         }
-        myRecyclerView = new MyRecyclerView(itemsList, 1, R.layout.list_item, sortBy);
-        myRecyclerView.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
+        myRecyclerViewHelper = new MyRecyclerViewHelper(itemsList, 1, R.layout.list_item, sortBy);
+        myRecyclerViewHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
     }
 
 
@@ -52,16 +52,16 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onAddNewItemDialogResult(DummyItem newItem) {
-        if(myRecyclerView != null) {
+        if(myRecyclerViewHelper != null) {
             //сохраним новый объект в бд и добавим его в лист
             newItem.setId(dummyItemsSource.create(newItem));
-            myRecyclerView.addItemToList(newItem);
+            myRecyclerViewHelper.addItemToList(newItem);
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(SORT_BY_EXTRA, myRecyclerView.getSortByState());
+        outState.putSerializable(SORT_BY_EXTRA, myRecyclerViewHelper.getSortByState());
         super.onSaveInstanceState(outState);
     }
 }

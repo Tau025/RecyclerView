@@ -1,5 +1,6 @@
 package com.devtau.recyclerview.recycler_view_frag;
 
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +14,9 @@ import com.devtau.recyclerview.util.Logger;
 import com.devtau.recyclerview.util.Util;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
-public class MyItemRVAdapter<T> extends RecyclerView.Adapter<MyItemRVAdapter.ViewHolder> {
-    //TODO: выберите класс хранимого объекта
+public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<MyItemRVAdapter.ViewHolder> {
     private ArrayList<T> itemsList;
     private final int listItemLayoutId;
     private final OnRVFragmentListener listener;
@@ -51,21 +52,15 @@ public class MyItemRVAdapter<T> extends RecyclerView.Adapter<MyItemRVAdapter.Vie
         ImageButton btnDelete = ((ImageButton) holder.view.findViewById(R.id.btnDelete));
 
         //здесь устанавливаем слушатели
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (null != listener) {
-                    listener.onListItemClick(holder.item);
-                }
+        holder.view.setOnClickListener(view -> {
+            if (null != listener) {
+                listener.onListItemClick(holder.item);
             }
         });
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (null != listener) {
-                    positionInList = holder.getAdapterPosition();
-                    listener.onListItemClickDelete(holder.item);
-                }
+        btnDelete.setOnClickListener(view -> {
+            if (null != listener) {
+                positionInList = holder.getAdapterPosition();
+                listener.onListItemClickDelete(holder.item);
             }
         });
     }
@@ -100,16 +95,19 @@ public class MyItemRVAdapter<T> extends RecyclerView.Adapter<MyItemRVAdapter.Vie
     }
 
     public void sort(SortBy sortBy) {
-//        Collections.sort(itemsList, DummyItem.Comparators.getProperComparator(sortBy));
+        Comparator comparator = DummyItem.Comparators.getProperComparator(sortBy);
+        Collections.sort(itemsList, comparator);
     }
 
     public void sortAndNotify(SortBy sortBy) {
+        Comparator comparator = DummyItem.Comparators.getProperComparator(sortBy);
+        Collections.sort(itemsList, comparator);
 //        Collections.sort(itemsList, DummyItem.Comparators.getProperComparator(sortBy));
         notifyDataSetChanged();
     }
 
 
-    public class ViewHolder<T> extends RecyclerView.ViewHolder {
+    public class ViewHolder<T extends Parcelable> extends RecyclerView.ViewHolder {
         //пока ViewHolder является вложенным классом, адаптер имеет доступ к его private переменным
         private final View view;
         private T item;
