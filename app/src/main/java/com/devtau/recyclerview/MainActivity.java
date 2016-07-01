@@ -40,16 +40,18 @@ public class MainActivity extends AppCompatActivity implements
 
 
     @Override
-    public void onListItemClick(DummyItem item) {
-        String msg = "You selected item " + item.toString();
-        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onListItemClickDelete(DummyItem item) {
-        //обратите внимание, что удаление из списка обрабатывается внутри списка
-        //клиенту нужно только передать инструкцию в бд
-        dummyItemsSource.remove(item);
+    public void onListItemClick(DummyItem item, int clickedActionId) {
+        switch (clickedActionId) {
+            case 0://клик по строке. просто покажем тост, по чему мы кликнули
+                String msg = "You selected item " + item.toString();
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                break;
+            case 1://запрос на удаление
+                //обратите внимание, что удаление из списка обрабатывается внутри списка
+                //клиенту нужно только передать инструкцию в бд
+                dummyItemsSource.remove(item);
+                break;
+        }
     }
 
     @Override

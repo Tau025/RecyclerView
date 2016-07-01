@@ -50,8 +50,8 @@ public class RVFragment<T extends Parcelable> extends Fragment {
         //рекомендовано читать аргументы из бандла не здесь, а в onCreate, но тогда нам нужно создавать
         //все переменные на уровне фрагмента, а не локальные для метода, которые мы сразу отдаем в адаптер
         ArrayList<T> itemsList = new ArrayList<>();
-        int columnCount = 1;
-        int listItemLayoutId = R.layout.list_item;
+        int columnCount = Constants.DEFAULT_COLUMN_COUNT;
+        int listItemLayoutId = Constants.DEFAULT_LIST_ITEM_LAYOUT;
         SortBy sortBy = Constants.DEFAULT_SORT_BY;
 
         if (getArguments() != null) {
@@ -109,8 +109,7 @@ public class RVFragment<T extends Parcelable> extends Fragment {
     }
 
     public interface OnRVFragmentListener<T extends Parcelable> {
-        // TODO: настройте интерфейс взаимодействия со списком
-        void onListItemClick(T item);
-        void onListItemClickDelete(T item);
+        //здесь действие не обрабатывается, а лишь пробрасывается дальше
+        void onListItemClick(T item, int clickedActionId);
     }
 }

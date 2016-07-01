@@ -56,8 +56,8 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         //рекомендовано читать аргументы из бандла не здесь, а в onCreate, но тогда нам нужно создавать
         //все переменные на уровне фрагмента, а не локальные для метода, которые мы сразу отдаем в адаптер
         ArrayList<T> itemsList = new ArrayList<>();
-        int columnCount = 1;
-        int listItemLayoutId = R.layout.list_item;
+        int columnCount = Constants.DEFAULT_COLUMN_COUNT;
+        int listItemLayoutId = Constants.DEFAULT_LIST_ITEM_LAYOUT;
         SortBy sortBy = Constants.DEFAULT_SORT_BY;
 
         if (getArguments() != null) {
@@ -157,22 +157,17 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     //можно было бы настроить прямую реализацию интерфейса взаимодействия с его дочерним списком активностью
     //однако ItemFragment может быть частью другого фрагмента, ссылку на который мы не можем получить
     @Override
-    public void onListItemClick(T item) {
-        listener.onListItemClick(item);
-    }
-
-    @Override
-    public void onListItemClickDelete(T item) {
-        //обратите внимание, что удаление из списка обрабатывается внутри списка
-        //клиенту нужно только передать инструкцию в бд
-        rvFragment.removeItemFromList(item);
-        listener.onListItemClickDelete(item);
+    public void onListItemClick(T item, int clickedActionId) {
+        if(clickedActionId == 1) {
+            //обратите внимание, что удаление из списка обрабатывается внутри списка
+            //клиенту нужно только передать инструкцию в бд
+            rvFragment.removeItemFromList(item);
+        }
+        listener.onListItemClick(item, clickedActionId);
     }
 
     public interface OnItemFragmentListener<T extends Parcelable> {
-        // TODO: настройте проброс интерфейса взаимодействия со списком
-        void onListItemClick(T item);
-        void onListItemClickDelete(T item);
+        void onListItemClick(T item, int clickedActionId);
         void onAddNewItemDialogResult(List<String> newItemParams);
     }
 }

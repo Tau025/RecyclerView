@@ -59,20 +59,22 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (null != listener) {
-                    listener.onListItemClick(holder.item);
-                }
+                processClick(holder, 0);
             }
         });
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (null != listener) {
-                    positionInList = holder.getAdapterPosition();
-                    listener.onListItemClickDelete(holder.item);
-                }
+                processClick(holder, 1);
             }
         });
+    }
+
+    private void processClick(ViewHolder holder, int clickedActionId) {
+        if (null != listener) {
+            positionInList = holder.getAdapterPosition();
+            listener.onListItemClick(holder.item, clickedActionId);
+        }
     }
 
     @Override
