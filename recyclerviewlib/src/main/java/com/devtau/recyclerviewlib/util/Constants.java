@@ -1,4 +1,4 @@
-package com.devtau.recyclerview.util;
+package com.devtau.recyclerviewlib.util;
 
 import com.devtau.recyclerviewlib.SortBy;
 

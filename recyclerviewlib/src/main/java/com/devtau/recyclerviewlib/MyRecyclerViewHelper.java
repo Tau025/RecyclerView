@@ -1,4 +1,4 @@
-package com.devtau.recyclerview.recycler_view_frag;
+package com.devtau.recyclerviewlib;
 
 import android.os.Bundle;
 import android.os.Parcelable;

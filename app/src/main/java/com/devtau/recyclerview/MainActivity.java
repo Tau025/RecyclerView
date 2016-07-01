@@ -6,11 +6,13 @@ import android.widget.Toast;
 import com.devtau.recyclerview.database.DataSource;
 import com.devtau.recyclerview.database.sources.DummyItemsSource;
 import com.devtau.recyclerview.model.DummyItem;
-import com.devtau.recyclerview.recycler_view_frag.ItemFragment;
-import com.devtau.recyclerview.recycler_view_frag.MyRecyclerViewHelper;
-import com.devtau.recyclerview.recycler_view_frag.SortBy;
+import com.devtau.recyclerviewlib.ItemFragment;
+import com.devtau.recyclerviewlib.MyRecyclerViewHelper;
+import com.devtau.recyclerviewlib.SortBy;
 import com.devtau.recyclerview.util.Constants;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         ItemFragment.OnItemFragmentListener<DummyItem> {
@@ -51,11 +53,15 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onAddNewItemDialogResult(DummyItem newItem) {
+    public void onAddNewItemDialogResult(List<String> newItemParams) {
+        //создадим из полученных данных новый хранимый объект
+        DummyItem newItem = new DummyItem(
+                Calendar.getInstance(),
+                Integer.parseInt(newItemParams.get(0)),
+                newItemParams.get(1));
+        newItem.setId(dummyItemsSource.create(newItem));//сохраним его в бд
         if(myRecyclerViewHelper != null) {
-            //сохраним новый объект в бд и добавим его в лист
-            newItem.setId(dummyItemsSource.create(newItem));
-            myRecyclerViewHelper.addItemToList(newItem);
+            myRecyclerViewHelper.addItemToList(newItem);//добавим его в лист
         }
     }
 
