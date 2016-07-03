@@ -22,6 +22,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         SpinnerFragment.SpinnerFragmentListener,
         AddButtonFragment.AddButtonFragmentListener,
         RVFragment.OnRVFragmentListener {
+    public static final String ARG_RV_HELPER_ID = "rvHelperId";
     public static final String ARG_ITEMS_LIST = "itemsList";
     public static final String ARG_COLUMN_COUNT = "columnCount";
     public static final String ARG_LIST_ITEM_LAYOUT_ID = "listItemLayoutId";
@@ -31,6 +32,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     public static final String ARG_COMPARATORS_NAMES = "comparatorsNames";
     public static final String ARG_INDEX_OF_SORT_METHOD = "indexOfSortMethod";
 
+    private int rvHelperId;
     private RVHelperInterface listener;
     boolean includeSpinnerInLayout = Constants.DEFAULT_ADD_SPINNER;
     private int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
@@ -73,6 +75,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         ArrayList<String> comparatorsNames = Util.getDefaultComparatorsNames(getContext());
 
         if (getArguments() != null) {
+            rvHelperId = getArguments().getInt(ARG_RV_HELPER_ID);
             itemsList = getArguments().getParcelableArrayList(ARG_ITEMS_LIST);
             comparators = (HashMap<Integer, Comparator>) getArguments().getSerializable(ARG_COMPARATORS);
             columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -172,13 +175,13 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     //выполняется после завершения ввода данных для нового хранимого объекта
     @Override
     public void onAddNewItemDialogResult(List<String> newItemParams) {
-        listener.onAddNewItemDialogResult(newItemParams);
+        listener.onAddNewItemDialogResult(newItemParams, rvHelperId);
     }
 
     //проброс вызова onBindViewHolder от MyItemRVAdapter через RVFragment в ItemFragment и далее клиенту
     @Override
     public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder) {
-        listener.onBindViewHolder(holder);
+        listener.onBindViewHolder(holder, rvHelperId);
     }
 
     //возвращает Comparator по его индексу. метод необходим, т.к. Comparator не упаковать в Bundle

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import com.devtau.recyclerviewlib.util.Constants;
+import com.devtau.recyclerviewlib.util.Logger;
 import com.devtau.recyclerviewlib.util.Util;
 /**
  * Клиент передает указанные параметры конструктора и реализует интерфейс RVHelperInterface
@@ -25,6 +26,8 @@ public class RVHelper<T extends Parcelable> {
         itemFragment = new ItemFragment();
         Bundle args = new Bundle();
 
+        Logger.d("builder.rvHelperId: " + String.valueOf(builder.rvHelperId));
+        args.putInt(ItemFragment.ARG_RV_HELPER_ID, builder.rvHelperId);
         args.putParcelableArrayList(ItemFragment.ARG_ITEMS_LIST, builder.itemsList);
         args.putSerializable(ItemFragment.ARG_COMPARATORS, builder.comparators);
         args.putInt(ItemFragment.ARG_COLUMN_COUNT, builder.columnCount);
@@ -82,6 +85,7 @@ public class RVHelper<T extends Parcelable> {
 
 
     public static class Builder<T extends Parcelable>{
+        private int rvHelperId;
         private ArrayList<T> itemsList; //обязательный параметр. нет дефолта
         //все параметры ниже не обязательны
         private int columnCount = Constants.DEFAULT_COLUMN_COUNT;
@@ -97,8 +101,10 @@ public class RVHelper<T extends Parcelable> {
             comparatorsNames = Util.getDefaultComparatorsNames(context);
         }
 
-        public static <T extends Parcelable>Builder<T> start(Context context) {
-            return new Builder<>(context);
+        public static <T extends Parcelable>Builder<T> start(Context context, int rvHelperId) {
+            Builder newBuilder = new Builder<>(context);
+            newBuilder.rvHelperId = rvHelperId;
+            return newBuilder;
         }
 
         public Builder setList(ArrayList<T> itemsList, HashMap<Integer, Comparator> comparators) {

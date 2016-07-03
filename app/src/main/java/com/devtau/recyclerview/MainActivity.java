@@ -24,9 +24,10 @@ import com.devtau.recyclerviewlib.util.Constants;
  * Пример использования библиотеки RVHelper клиентом
  */
 public class MainActivity extends AppCompatActivity implements
-        RVHelperInterface<DummyItem> {
+        RVHelperInterface {
     private static final String ARG_INDEX_OF_SORT_METHOD = "indexOfSortMethod";
     private RVHelper rvHelper;
+    private RVHelper rvHelper2;
     //рекомендуется хранить ссылку на dataSource, если таблиц больше одной
     private DummyItemsSource dummyItemsSource;
 
@@ -45,20 +46,27 @@ public class MainActivity extends AppCompatActivity implements
         if(savedInstanceState != null) {
             indexOfSortMethod = savedInstanceState.getInt(ARG_INDEX_OF_SORT_METHOD);
         }
-        rvHelper = RVHelper.Builder.<DummyItem> start(this).setList(itemsList, comparators)
+        rvHelper = RVHelper.Builder.<DummyItem> start(this, R.id.rv_helper_placeholder).setList(itemsList, comparators)
                 .withColumnCount(1)
                 .withListItemLayoutId(R.layout.list_item)
                 .withSortSpinner(comparatorsNames, indexOfSortMethod)
                 .withAddButton()
                 .build();
-
         rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
+
+        rvHelper2 = RVHelper.Builder.<DummyItem> start(this, R.id.rv_helper_placeholder2).setList(itemsList, comparators)
+                .withColumnCount(2)
+                .withListItemLayoutId(R.layout.list_item)
+                .withSortSpinner(comparatorsNames, indexOfSortMethod)
+                .withAddButton()
+                .build();
+        rvHelper2.addItemFragmentToLayout(this, R.id.rv_helper_placeholder2);
     }
 
 
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder) {
+    public void onBindViewHolder(final ViewHolder holder, int rvHelperId) {
         //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
         final DummyItem item = (DummyItem) holder.getItem();
 
@@ -69,25 +77,32 @@ public class MainActivity extends AppCompatActivity implements
         ImageButton btnDelete = ((ImageButton) holder.getView().findViewById(R.id.btnDelete));
 
         //здесь устанавливаем слушатели
-        holder.getView().setOnClickListener(view -> onListItemClick(item, 0));
-        btnDelete.setOnClickListener(view -> onListItemClick(item, 1));
+        holder.getView().setOnClickListener(view -> onListItemClick(item, 0, rvHelperId));
+        btnDelete.setOnClickListener(view -> onListItemClick(item, 1, rvHelperId));
     }
 
-    private void onListItemClick(DummyItem item, int clickedActionId) {
+    private void onListItemClick(DummyItem item, int clickedActionId, int rvHelperId) {
         switch (clickedActionId) {
             case 0://клик по строке. просто покажем тост, по чему мы кликнули
                 String msg = "You selected item " + item.toString();
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 break;
             case 1://запрос на удаление
-                rvHelper.removeItemFromList(item);
-                dummyItemsSource.remove(item);
+                if(rvHelperId == R.id.rv_helper_placeholder) {
+                    dummyItemsSource.remove(item);
+                    if(rvHelper != null) rvHelper.removeItemFromList(item);
+                } else
+                if(rvHelperId == R.id.rv_helper_placeholder2) {
+                    //в реальности классом объектов второго листа может быть совсем не DummyItem
+                    dummyItemsSource.remove(item);
+                    if(rvHelper2 != null) rvHelper2.removeItemFromList(item);
+                }
                 break;
         }
     }
 
     @Override
-    public void onAddNewItemDialogResult(List<String> newItemParams) {
+    public void onAddNewItemDialogResult(List<String> newItemParams, int rvHelperId) {
         //создадим из полученных данных новый хранимый объект
         int price = 0;
         try {
@@ -96,10 +111,24 @@ public class MainActivity extends AppCompatActivity implements
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), R.string.NumberFormatException, Toast.LENGTH_SHORT).show();
         }
-        DummyItem newItem = new DummyItem(Calendar.getInstance(), price, newItemParams.get(1));
-        newItem.setId(dummyItemsSource.create(newItem));//сохраним его в бд
-        if(rvHelper != null) {
-            rvHelper.addItemToList(newItem);//добавим его в лист
+
+        switch (rvHelperId) {
+            case R.id.rv_helper_placeholder:
+                DummyItem newItem = new DummyItem(Calendar.getInstance(), price, newItemParams.get(1));
+                newItem.setId(dummyItemsSource.create(newItem));//сохраним его в бд
+                if(rvHelper != null) {
+                    rvHelper.addItemToList(newItem);//добавим его в лист
+                }
+                break;
+
+            case R.id.rv_helper_placeholder2:
+                //в реальности классом объектов второго листа может быть совсем не DummyItem
+                DummyItem newItemOther = new DummyItem(Calendar.getInstance(), price, newItemParams.get(1));
+                newItemOther.setId(dummyItemsSource.create(newItemOther));//сохраним его в бд
+                if(rvHelper2 != null) {
+                    rvHelper2.addItemToList(newItemOther);//добавим его в лист
+                }
+                break;
         }
     }
 
