@@ -78,30 +78,6 @@ public class RVFragment<T extends Parcelable> extends Fragment {
         return view;
     }
 
-
-    //метод публичный, т.к. при работе с бд _id хранимого объекта создается только после
-    //вставки записи в бд, а к ней у списка доступа нет
-    public void addItemToList(T item, Comparator comparator) {
-        int position = adapter.addItemToList(item, comparator);
-        recyclerView.scrollToPosition(position);
-    }
-
-
-
-    //методы, вызываемые, если команда на сортировку/удаление/переназначечение поступает извне списка
-    //обычно такие команды генерируются внутри
-    public void sort(Comparator comparator) {
-        adapter.sortAndNotify(comparator);
-    }
-
-    public void removeItemFromList(T item) {
-        adapter.removeItemFromList(item);
-    }
-
-    public void setList(ArrayList<T> itemsList){
-        adapter.setList(itemsList);
-    }
-
     @Override
     public void onDetach() {
         Logger.d("RVFragment.onDetach()");
@@ -109,8 +85,33 @@ public class RVFragment<T extends Parcelable> extends Fragment {
         listener = null;
     }
 
-    public interface OnRVFragmentListener<T extends Parcelable> {
-        //здесь действие не обрабатывается, а лишь пробрасывается дальше
+
+    //МЕТОДЫ ВЗАИМОДЕЙСТВИЯ ItemFragment С RVFragment-----------------------------------------------
+
+    //вставляет новую строку в лист
+    public void addItemToList(T item, Comparator comparator) {
+        int position = adapter.addItemToList(item, comparator);
+        recyclerView.scrollToPosition(position);
+    }
+
+    //удаляет строку из листа
+    public void removeItemFromList(T item) {
+        adapter.removeItemFromList(item);
+    }
+
+    //переназначает лист адаптера
+    public void setList(ArrayList<T> itemsList){
+        adapter.setList(itemsList);
+    }
+
+    //сортирует лист
+    public void sort(Comparator comparator) {
+        adapter.sortAndNotify(comparator);
+    }
+
+
+    //интерфейс для общения RVFragment со своим родителем
+    public interface OnRVFragmentListener {
         void onBindViewHolder(MyItemRVAdapter.ViewHolder holder);
         Comparator provideComparator(int indexOfSortMethod);
     }

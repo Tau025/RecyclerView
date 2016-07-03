@@ -48,24 +48,19 @@ public class RVHelper<T extends Parcelable> {
     }
 
 
-    //метод необходим для savedInstanceState
+    //метод необходим для saveInstanceState
     public int getIndexOfSortMethod() {
         return itemFragment.getIndexOfSortMethod();
     }
 
 
+    //вставляет новую строку в лист
     //метод публичный, т.к. при работе с бд _id хранимого объекта создается только после
     //вставки записи в бд, а к ней у списка доступа нет
     public void addItemToList(T item) {
         itemFragment.addItemToList(item);
     }
 
-
-    //сортирует лист
-    //обычно эта команда генерируется внутри RVHelper выбором одного из вариантов в спиннере
-    public void sort(int indexOfSortMethod) {
-        itemFragment.onSpinnerItemSelected(indexOfSortMethod);
-    }
 
     //удаляет строку из листа
     //физическое удаление из бд - ответственность клиента, не входящая в функционал RVHelper
@@ -77,5 +72,11 @@ public class RVHelper<T extends Parcelable> {
     //клиент сам проверяет, что к новому передаваемому листу могут быть применены старые компараторы
     public void setList(ArrayList<T> itemsList){
         itemFragment.setList(itemsList);
+    }
+
+    //сортирует лист
+    //обычно эта команда генерируется внутри RVHelper выбором одного из вариантов в спиннере
+    public void sort(int indexOfSortMethod) {
+        itemFragment.onSpinnerItemSelected(indexOfSortMethod);
     }
 }

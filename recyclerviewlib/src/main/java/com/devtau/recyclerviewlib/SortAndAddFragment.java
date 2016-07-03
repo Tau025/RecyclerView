@@ -2,7 +2,6 @@ package com.devtau.recyclerviewlib;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +19,13 @@ import com.devtau.recyclerviewlib.util.Util;
 /**
  * Фрагмент для опционально добавляемых контролов сортировки и вставки новой записи в список
  */
-public class SortAndAddFragment<T extends Parcelable> extends Fragment implements
+public class SortAndAddFragment extends Fragment implements
         AddNewItemDF.onAddNewItemDFListener {
     private OnSortAndAddFragmentListener listener;
     private Spinner spnSort;
 
     //Обязательный пустой конструктор
     public SortAndAddFragment() { }
-    //мы не можем использовать статический метод newInstance() для создания фрагмента с дженериками
 
     @Override
     public void onAttach(Context context) {
@@ -100,13 +98,14 @@ public class SortAndAddFragment<T extends Parcelable> extends Fragment implement
     }
 
 
+    //интерфейс для общения SortAndAddFragment со своим родителем
     public interface OnSortAndAddFragmentListener {
         void onSpinnerItemSelected(int indexOfSortMethod);
         void onAddNewItemDialogResult(List<String> newItemParams);
     }
 
 
-
+    //адаптер спиннера. здесь можно настроить отображение его строк в свернутом и развернутом виде
     public class SpinnerAdapter extends ArrayAdapter<String> {
         ArrayList<String> comparatorsNames;
 

@@ -45,13 +45,9 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
     }
 
 
+    //МЕТОДЫ ВЗАИМОДЕЙСТВИЯ RVFragment С MyItemRVAdapter-----------------------------------------------
 
-    //публичные методы редактирования хранимого списка
-    public void setList(ArrayList<T> itemsList){
-        this.itemsList = itemsList;
-        notifyDataSetChanged();
-    }
-
+    //вставляет новую строку в лист
     public int addItemToList(T item, Comparator comparator) {
         itemsList.add(item);
         sort(comparator);
@@ -60,8 +56,9 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
         return position;
     }
 
+    //удаляет строку из листа
+    //для корректного удаления элемента из списка реализуйте equals и hashCode у класса хранимого объекта
     public void removeItemFromList(T item){
-        //для корректного удаления элемента из списка реализуйте equals и hashCode у класса хранимого объекта
         int positionInList = itemsList.indexOf(item);
         itemsList.remove(item);
         if(positionInList != -1) {
@@ -69,18 +66,24 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
         }
     }
 
-    public void sort(Comparator comparator) {
-        Collections.sort(itemsList, comparator);
+    //переназначает лист адаптера
+    public void setList(ArrayList<T> itemsList){
+        this.itemsList = itemsList;
+        notifyDataSetChanged();
     }
 
+    //сортирует лист
     public void sortAndNotify(Comparator comparator) {
         sort(comparator);
         notifyDataSetChanged();
     }
+    private void sort(Comparator comparator) {
+        Collections.sort(itemsList, comparator);
+    }
 
 
+    //вьюхолдер-класс, объединяющий данные строки списка с его пользовательским представлением
     public class ViewHolder<T extends Parcelable> extends RecyclerView.ViewHolder {
-        //пока ViewHolder является вложенным классом, адаптер имеет доступ к его private переменным
         private final View view;
         private T item;
 

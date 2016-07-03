@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ItemFragment<T extends Parcelable> extends Fragment implements
         SortAndAddFragment.OnSortAndAddFragmentListener,
-        RVFragment.OnRVFragmentListener<T> {
+        RVFragment.OnRVFragmentListener {
     public static final String ARG_ITEMS_LIST = "itemsList";
     public static final String ARG_COLUMN_COUNT = "columnCount";
     public static final String ARG_LIST_ITEM_LAYOUT_ID = "listItemLayoutId";
@@ -112,11 +112,28 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         ft.commit();
     }
 
+    @Override
+    public void onDetach() {
+        Logger.d("ItemFragment.onDetach()");
+        super.onDetach();
+        listener = null;
+    }
 
+
+    //МЕТОДЫ ВЗАИМОДЕЙСТВИЯ RVHelper С ItemFragment-------------------------------------------------
+
+    //метод необходим для saveInstanceState
+    public int getIndexOfSortMethod() {
+        return indexOfSortMethod;
+    }
+
+
+    //вставляет новую строку в лист
     public void addItemToList(T item) {
         rvFragment.addItemToList(item, comparators.get(indexOfSortMethod));
     }
 
+    //удаляет строку из листа
     public void removeItemFromList(T item) {
         rvFragment.removeItemFromList(item);
     }
@@ -126,21 +143,6 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         rvFragment.setList(itemsList);
     }
 
-
-    @Override
-    public void onDetach() {
-        Logger.d("ItemFragment.onDetach()");
-        super.onDetach();
-        listener = null;
-    }
-
-
-    //метод необходим для savedInstanceState
-    public int getIndexOfSortMethod() {
-        return indexOfSortMethod;
-    }
-
-
     //сортирует лист
     //этот же метод используется и для обработки запросов на сортировку извне RVHelper
     @Override
@@ -149,19 +151,22 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         rvFragment.sort(comparators.get(indexOfSortMethod));
     }
 
+
+    //МЕТОДЫ ВЗАИМОДЕЙСТВИЯ ДОЧЕРНИХ ФРАГМЕНТОВ С ItemFragment--------------------------------------
+
+    //выполняется после завершения ввода данных для нового хранимого объекта
     @Override
     public void onAddNewItemDialogResult(List<String> newItemParams) {
         listener.onAddNewItemDialogResult(newItemParams);
     }
 
-    //этот фрагмент содержит вложенный фрагмент списка
-    //можно было бы настроить прямую реализацию интерфейса взаимодействия с его дочерним списком активностью
-    //однако ItemFragment может быть частью другого фрагмента, ссылку на который мы не можем получить
+    //проброс вызова onBindViewHolder от MyItemRVAdapter через RVFragment в ItemFragment и далее клиенту
     @Override
     public void onBindViewHolder(MyItemRVAdapter.ViewHolder holder) {
         listener.onBindViewHolder(holder);
     }
 
+    //возвращает Comparator по его индексу. метод необходим, т.к. Comparator не упаковать в Bundle
     @Override
     public Comparator provideComparator(int indexOfSortMethod) {
         return comparators.get(indexOfSortMethod);
