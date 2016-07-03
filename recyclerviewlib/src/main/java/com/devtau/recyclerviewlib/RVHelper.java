@@ -1,5 +1,6 @@
 package com.devtau.recyclerviewlib;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentTransaction;
@@ -7,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import com.devtau.recyclerviewlib.util.Constants;
+import com.devtau.recyclerviewlib.util.Util;
 /**
  * Клиент передает указанные параметры конструктора и реализует интерфейс RVHelperInterface
  * класс хранимого объекта должен:
@@ -16,28 +19,18 @@ import java.util.HashMap;
 public class RVHelper<T extends Parcelable> {
     private ItemFragment itemFragment;
 
-    public RVHelper(ArrayList<T> itemsList, int columnCount, int listItemLayoutId,
-                    int indexOfSortMethod, HashMap<Integer, Comparator> comparators,
-                    ArrayList<String> comparatorsNames) {
-        itemFragment = createItemFragment(itemsList, columnCount, listItemLayoutId, indexOfSortMethod,
-                comparators, comparatorsNames);
-    }
-
-    public ItemFragment createItemFragment(ArrayList<T> itemsList, int columnCount, int listItemLayoutId,
-                                           int indexOfSortMethod, HashMap<Integer, Comparator> comparators,
-                                           ArrayList<String> comparatorsNames) {
-        ItemFragment fragment = new ItemFragment();
+    public RVHelper(Builder<T> builder) {
+        itemFragment = new ItemFragment();
         Bundle args = new Bundle();
 
-        args.putParcelableArrayList(ItemFragment.ARG_ITEMS_LIST, itemsList);
-        args.putInt(ItemFragment.ARG_COLUMN_COUNT, columnCount);
-        args.putInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID, listItemLayoutId);
-        args.putInt(ItemFragment.ARG_INDEX_OF_SORT_METHOD, indexOfSortMethod);
-        args.putSerializable(ItemFragment.ARG_COMPARATORS, comparators);
-        args.putStringArrayList(ItemFragment.ARG_COMPARATORS_NAMES, comparatorsNames);
+        args.putParcelableArrayList(ItemFragment.ARG_ITEMS_LIST, builder.itemsList);
+        args.putInt(ItemFragment.ARG_COLUMN_COUNT, builder.columnCount);
+        args.putInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID, builder.listItemLayoutId);
+        args.putInt(ItemFragment.ARG_INDEX_OF_SORT_METHOD, builder.indexOfSortMethod);
+        args.putSerializable(ItemFragment.ARG_COMPARATORS, builder.comparators);
+        args.putStringArrayList(ItemFragment.ARG_COMPARATORS_NAMES, builder.comparatorsNames);
 
-        fragment.setArguments(args);
-        return fragment;
+        itemFragment.setArguments(args);
     }
 
     public void addItemFragmentToLayout(AppCompatActivity activity, int placeholderId){
@@ -78,5 +71,55 @@ public class RVHelper<T extends Parcelable> {
     //обычно эта команда генерируется внутри RVHelper выбором одного из вариантов в спиннере
     public void sort(int indexOfSortMethod) {
         itemFragment.onSpinnerItemSelected(indexOfSortMethod);
+    }
+
+
+
+    public static class Builder<T extends Parcelable>{
+        private ArrayList<T> itemsList; //обязательный параметр. нет дефолта
+        //все параметры ниже не обязательны
+        private int columnCount = Constants.DEFAULT_COLUMN_COUNT;
+        private int listItemLayoutId = Constants.DEFAULT_LIST_ITEM_LAYOUT;
+        //три параметра ниже для использования сортировки
+        private HashMap<Integer, Comparator> comparators;//нет дефолта
+        private ArrayList<String> comparatorsNames;//дефолт назначается в конструкторе
+        private int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
+
+        private Builder(Context context) {
+            comparatorsNames = Util.getDefaultComparatorsNames(context);
+        }
+
+        public static <T extends Parcelable>Builder<T> start(Context context) {
+            return new Builder<>(context);
+        }
+
+        public Builder setList(ArrayList<T> itemsList) {
+            this.itemsList = itemsList;
+            return this;
+        }
+
+        public Builder withColumnCount(int columnCount) {
+            this.columnCount = columnCount;
+            return this;
+        }
+
+        public Builder withListItemLayoutId(int listItemLayoutId) {
+            this.listItemLayoutId = listItemLayoutId;
+            return this;
+        }
+
+        public Builder withSortAndAdd(HashMap<Integer, Comparator> comparators,
+                                      ArrayList<String> comparatorsNames, int indexOfSortMethod) {
+            this.comparators = comparators;
+            this.comparatorsNames = comparatorsNames;
+            this.indexOfSortMethod = indexOfSortMethod;
+
+            //TODO: действия по добавлению SortAndAddFragment
+            return this;
+        }
+
+        public RVHelper<T> build() {
+            return new RVHelper(this);
+        }
     }
 }

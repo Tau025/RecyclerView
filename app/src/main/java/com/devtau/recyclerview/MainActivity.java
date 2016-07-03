@@ -26,7 +26,7 @@ import com.devtau.recyclerviewlib.util.Constants;
 public class MainActivity extends AppCompatActivity implements
         RVHelperInterface<DummyItem> {
     private static final String ARG_INDEX_OF_SORT_METHOD = "indexOfSortMethod";
-    private RVHelper RVHelper;
+    private RVHelper rvHelper;
     //рекомендуется хранить ссылку на dataSource, если таблиц больше одной
     private DummyItemsSource dummyItemsSource;
 
@@ -39,14 +39,19 @@ public class MainActivity extends AppCompatActivity implements
         dummyItemsSource = new DataSource(this).getDummyItemsSource();
         ArrayList<DummyItem> itemsList = dummyItemsSource.getItemsList();
 
+        HashMap<Integer, Comparator> comparators = DummyItemComparators.getComparatorsMap();
+        ArrayList<String> comparatorsNames = DummyItemComparators.getComparatorsNames(this);
         int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
         if(savedInstanceState != null) {
             indexOfSortMethod = savedInstanceState.getInt(ARG_INDEX_OF_SORT_METHOD);
         }
-        HashMap<Integer, Comparator> comparators = DummyItemComparators.getComparatorsMap();
-        ArrayList<String> comparatorsNames = DummyItemComparators.getComparatorsNames(this);
-        RVHelper = new RVHelper(itemsList, 1, R.layout.list_item, indexOfSortMethod, comparators, comparatorsNames);
-        RVHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
+        rvHelper = RVHelper.Builder.<DummyItem> start(this).setList(itemsList)
+                .withColumnCount(1)
+                .withListItemLayoutId(R.layout.list_item)
+                .withSortAndAdd(comparators, comparatorsNames, indexOfSortMethod)
+                .build();
+
+        rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
     }
 
 
@@ -74,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                 break;
             case 1://запрос на удаление
-                RVHelper.removeItemFromList(item);
+                rvHelper.removeItemFromList(item);
                 dummyItemsSource.remove(item);
                 break;
         }
@@ -92,14 +97,14 @@ public class MainActivity extends AppCompatActivity implements
         }
         DummyItem newItem = new DummyItem(Calendar.getInstance(), price, newItemParams.get(1));
         newItem.setId(dummyItemsSource.create(newItem));//сохраним его в бд
-        if(RVHelper != null) {
-            RVHelper.addItemToList(newItem);//добавим его в лист
+        if(rvHelper != null) {
+            rvHelper.addItemToList(newItem);//добавим его в лист
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(ARG_INDEX_OF_SORT_METHOD, RVHelper.getIndexOfSortMethod());
+        outState.putInt(ARG_INDEX_OF_SORT_METHOD, rvHelper.getIndexOfSortMethod());
         super.onSaveInstanceState(outState);
     }
 }
