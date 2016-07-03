@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.devtau.recyclerviewlib.SortAndAddFragment">
+    tools:context=".SpinnerFragment">
 
     <TextView
         android:id="@+id/sort"
@@ -19,16 +19,5 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/sort"
         android:layout_toEndOf="@+id/sort"
-        android:layout_toLeftOf="@+id/btnAdd"
-        android:layout_toStartOf="@+id/btnAdd"
-        android:layout_centerVertical="true" />
-
-    <Button
-        android:id="@+id/btnAdd"
-        android:text="@string/add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true" />
 </RelativeLayout>

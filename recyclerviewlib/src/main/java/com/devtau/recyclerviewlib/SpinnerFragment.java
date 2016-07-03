@@ -8,46 +8,44 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.Spinner;
 import java.util.ArrayList;
-import java.util.List;
+
 import com.devtau.recyclerviewlib.util.Constants;
 import com.devtau.recyclerviewlib.util.Logger;
 import com.devtau.recyclerviewlib.util.Util;
 /**
  * Фрагмент для опционально добавляемых контролов сортировки и вставки новой записи в список
  */
-public class SortAndAddFragment extends Fragment implements
-        AddNewItemDF.onAddNewItemDFListener {
-    private OnSortAndAddFragmentListener listener;
+public class SpinnerFragment extends Fragment {
+    private SpinnerFragmentListener listener;
     private Spinner spnSort;
 
     //Обязательный пустой конструктор
-    public SortAndAddFragment() { }
+    public SpinnerFragment() { }
 
     @Override
     public void onAttach(Context context) {
         //если фрагмент является вложенным, context - это активность, держащая фрагмент-родитель, а не сам родитель
-        Logger.d("SortAndAddFragment.onAttach()");
+        Logger.d("SpinnerFragment.onAttach()");
         super.onAttach(context);
         try {
             //проверим, реализован ли нужный интерфейс родительским фрагментом или активностью
-            listener = (OnSortAndAddFragmentListener) getParentFragment();
+            listener = (SpinnerFragmentListener) getParentFragment();
             if (listener == null) {
-                listener = (OnSortAndAddFragmentListener) context;
+                listener = (SpinnerFragmentListener) context;
             }
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnSortAndAddFragmentListener");
+            throw new ClassCastException(context.toString() + " must implement AddButtonFragmentListener");
         }
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Logger.d("SortAndAddFragment.onCreateView()");
-        View rootView = inflater.inflate(R.layout.fragment_sort_and_add, container, false);
+        Logger.d("SpinnerFragment.onCreateView()");
+        View rootView = inflater.inflate(R.layout.fragment_spinner, container, false);
 
         int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
         ArrayList<String> comparatorsNames = Util.getDefaultComparatorsNames(getContext());
@@ -62,9 +60,8 @@ public class SortAndAddFragment extends Fragment implements
 
     private void initControls(View rootView, int indexOfSortMethod, ArrayList<String> comparatorsNames) {
         spnSort = (Spinner) rootView.findViewById(R.id.spnSort);
-        Button btnAdd = (Button) rootView.findViewById(R.id.btnAdd);
 
-        if(spnSort != null && btnAdd != null) {
+        if(spnSort != null) {
             spnSort.setAdapter(new SpinnerAdapter(rootView.getContext(), comparatorsNames));
             spnSort.setSelection(indexOfSortMethod);
             spnSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -75,33 +72,20 @@ public class SortAndAddFragment extends Fragment implements
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {/*NOP*/}
             });
-
-            btnAdd.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new AddNewItemDF().show(getChildFragmentManager(), AddNewItemDF.FRAGMENT_TAG);
-                }
-            });
         }
     }
 
     @Override
     public void onDetach() {
-        Logger.d("SortAndAddFragment.onDetach()");
+        Logger.d("SpinnerFragment.onDetach()");
         super.onDetach();
         listener = null;
     }
 
-    @Override
-    public void onAddNewItemDialogResult(List<String> newItemParams) {
-        listener.onAddNewItemDialogResult(newItemParams);
-    }
 
-
-    //интерфейс для общения SortAndAddFragment со своим родителем
-    public interface OnSortAndAddFragmentListener {
+    //интерфейс для общения SpinnerFragment со своим родителем
+    public interface SpinnerFragmentListener {
         void onSpinnerItemSelected(int indexOfSortMethod);
-        void onAddNewItemDialogResult(List<String> newItemParams);
     }
 
 

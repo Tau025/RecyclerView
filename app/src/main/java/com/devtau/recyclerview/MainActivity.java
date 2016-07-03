@@ -45,10 +45,11 @@ public class MainActivity extends AppCompatActivity implements
         if(savedInstanceState != null) {
             indexOfSortMethod = savedInstanceState.getInt(ARG_INDEX_OF_SORT_METHOD);
         }
-        rvHelper = RVHelper.Builder.<DummyItem> start(this).setList(itemsList)
+        rvHelper = RVHelper.Builder.<DummyItem> start(this).setList(itemsList, comparators)
                 .withColumnCount(1)
                 .withListItemLayoutId(R.layout.list_item)
-                .withSortAndAdd(comparators, comparatorsNames, indexOfSortMethod)
+                .withSortSpinner(comparatorsNames, indexOfSortMethod)
+                .withAddButton()
                 .build();
 
         rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);

@@ -15,7 +15,7 @@ import static com.devtau.recyclerview.database.tables.DummyItemsTable.*;
  * 1 - переопределить методы equals() и hashCode() - для корректного удаления элемента из списка
  * 2 - реализовать Parcelable
  */
-public class DummyItem implements Parcelable, Comparable{
+public class DummyItem implements Parcelable{
     private long id;
     private Calendar date;
     private int price;
@@ -126,10 +126,5 @@ public class DummyItem implements Parcelable, Comparable{
         parcel.writeLong(date.getTimeInMillis());
         parcel.writeInt(price);
         parcel.writeString(description);
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        return 0;
     }
 }

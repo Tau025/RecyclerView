@@ -19,19 +19,24 @@ import java.util.List;
  * Фрагмент обобщающий сортировку, вставку новой записи с отображением самого списка
  */
 public class ItemFragment<T extends Parcelable> extends Fragment implements
-        SortAndAddFragment.OnSortAndAddFragmentListener,
+        SpinnerFragment.SpinnerFragmentListener,
+        AddButtonFragment.AddButtonFragmentListener,
         RVFragment.OnRVFragmentListener {
     public static final String ARG_ITEMS_LIST = "itemsList";
     public static final String ARG_COLUMN_COUNT = "columnCount";
     public static final String ARG_LIST_ITEM_LAYOUT_ID = "listItemLayoutId";
-    public static final String ARG_INDEX_OF_SORT_METHOD = "indexOfSortMethod";
+    public static final String ARG_INCLUDE_ADD_BUTTON_IN_LAYOUT = "includeAddButtonInLayout";
+    public static final String ARG_INCLUDE_SPINNER_IN_LAYOUT = "includeSpinnerInLayout";
     public static final String ARG_COMPARATORS = "comparators";
     public static final String ARG_COMPARATORS_NAMES = "comparatorsNames";
+    public static final String ARG_INDEX_OF_SORT_METHOD = "indexOfSortMethod";
+
     private RVHelperInterface listener;
+    boolean includeSpinnerInLayout = Constants.DEFAULT_ADD_SPINNER;
     private int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
     private HashMap<Integer, Comparator> comparators;
 
-    private SortAndAddFragment sortAndAddFragment;
+    private SpinnerFragment spinnerFragment;
     private RVFragment rvFragment;
 
     //Обязательный пустой конструктор
@@ -64,27 +69,37 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         ArrayList<T> itemsList = new ArrayList<>();
         int columnCount = Constants.DEFAULT_COLUMN_COUNT;
         int listItemLayoutId = Constants.DEFAULT_LIST_ITEM_LAYOUT;
+        boolean includeAddButtonInLayout = Constants.DEFAULT_INCLUDE_ADD_BUTTON;
         ArrayList<String> comparatorsNames = Util.getDefaultComparatorsNames(getContext());
 
         if (getArguments() != null) {
             itemsList = getArguments().getParcelableArrayList(ARG_ITEMS_LIST);
+            comparators = (HashMap<Integer, Comparator>) getArguments().getSerializable(ARG_COMPARATORS);
             columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             listItemLayoutId = getArguments().getInt(ARG_LIST_ITEM_LAYOUT_ID);
-            indexOfSortMethod = getArguments().getInt(ARG_INDEX_OF_SORT_METHOD);
-            comparators = (HashMap<Integer, Comparator>) getArguments().getSerializable(ARG_COMPARATORS);
-            comparatorsNames = getArguments().getStringArrayList(ARG_COMPARATORS_NAMES);
+            includeAddButtonInLayout = getArguments().getBoolean(ARG_INCLUDE_ADD_BUTTON_IN_LAYOUT);
+            if(includeSpinnerInLayout = getArguments().getBoolean(ARG_INCLUDE_SPINNER_IN_LAYOUT)) {
+                comparatorsNames = getArguments().getStringArrayList(ARG_COMPARATORS_NAMES);
+                indexOfSortMethod = getArguments().getInt(ARG_INDEX_OF_SORT_METHOD);
+            }
         }
 
-        sortAndAddFragment = createSortAndAddFragment(indexOfSortMethod, comparatorsNames);
+        if(includeSpinnerInLayout) {
+            spinnerFragment = createSpinnerFragment(indexOfSortMethod, comparatorsNames);
+            addFragmentToLayout(R.id.spinner_fragment_placeholder, spinnerFragment);
+        }
+        if(includeAddButtonInLayout) {
+            addFragmentToLayout(R.id.add_button_fragment_placeholder, new AddButtonFragment());
+        }
+
         rvFragment = createRVFragment(itemsList, columnCount, listItemLayoutId, indexOfSortMethod);
-        addFragmentToLayout(R.id.sort_and_add_placeholder, sortAndAddFragment);
         addFragmentToLayout(R.id.recycler_view_placeholder, rvFragment);
 
         return view;
     }
 
-    public SortAndAddFragment createSortAndAddFragment(int indexOfSortMethod, ArrayList<String> comparatorsNames) {
-        SortAndAddFragment fragment = new SortAndAddFragment();
+    public SpinnerFragment createSpinnerFragment(int indexOfSortMethod, ArrayList<String> comparatorsNames) {
+        SpinnerFragment fragment = new SpinnerFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_INDEX_OF_SORT_METHOD, indexOfSortMethod);
         args.putStringArrayList(ARG_COMPARATORS_NAMES, comparatorsNames);
