@@ -14,12 +14,12 @@ import com.devtau.recyclerview.database.DataSource;
 import com.devtau.recyclerview.database.sources.DummyItemsSource;
 import com.devtau.recyclerview.model.DummyItem;
 import com.devtau.recyclerview.model.DummyItemComparators;
+import com.devtau.recyclerview.util.Util;
 
 import com.devtau.recyclerviewlib.RVHelper;
 import com.devtau.recyclerviewlib.RVHelperInterface;
 import com.devtau.recyclerviewlib.MyItemRVAdapter.ViewHolder;
 import com.devtau.recyclerviewlib.util.Constants;
-import com.devtau.recyclerviewlib.util.Util;
 /**
  * Пример использования библиотеки RVHelper клиентом
  */
