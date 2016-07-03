@@ -5,27 +5,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import com.devtau.recyclerviewlib.util.Logger;
-import com.devtau.recyclerviewlib.util.Util;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-
+/**
+ * Адаптер списка и вьюхолдер строки списка
+ */
 public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<MyItemRVAdapter.ViewHolder> {
     private ArrayList<T> itemsList;
     private final int listItemLayoutId;
     private final RVFragment.OnRVFragmentListener listener;
-    private int positionInList = -1;
 
-    public MyItemRVAdapter(ArrayList<T> itemsList, int listItemLayoutId, SortBy sortBy,
+    public MyItemRVAdapter(ArrayList<T> itemsList, int listItemLayoutId, Comparator comparator,
                            RVFragment.OnRVFragmentListener listener) {
         Logger.d("MyItemRVAdapter constructor");
         this.itemsList = itemsList;
         this.listItemLayoutId = listItemLayoutId;
-        sort(sortBy);
+        sort(comparator);
         this.listener = listener;
     }
 
@@ -36,45 +33,10 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
 //        Logger.d("MyItemRVAdapter.onBindViewHolder()");
         holder.item = itemsList.get(position);
-        //TODO: настройте onBindViewHolder
-        //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
-//        DummyItem item = (DummyItem) holder.item;
-
-//        ((TextView) holder.view.findViewById(R.id.price)).setText(String.valueOf(holder.item.getPrice()));
-//        ((TextView) holder.view.findViewById(R.id.description)).setText(item.getDescription());
-//        String dateString = Util.getStringDateTimeFromCal(item.getDate());
-//        ((TextView) holder.view.findViewById(R.id.date)).setText(dateString);
-//        ImageButton btnDelete = ((ImageButton) holder.view.findViewById(R.id.btnDelete));
-
-        ((TextView) holder.view.findViewById(R.id.price)).setText(String.valueOf(22));
-        ((TextView) holder.view.findViewById(R.id.description)).setText("описание");
-        String dateString = Util.getStringDateTimeFromCal(Calendar.getInstance());
-        ((TextView) holder.view.findViewById(R.id.date)).setText(dateString);
-        ImageButton btnDelete = ((ImageButton) holder.view.findViewById(R.id.btnDelete));
-
-        //здесь устанавливаем слушатели
-        holder.view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processClick(holder, 0);
-            }
-        });
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processClick(holder, 1);
-            }
-        });
-    }
-
-    private void processClick(ViewHolder holder, int clickedActionId) {
-        if (null != listener) {
-            positionInList = holder.getAdapterPosition();
-            listener.onListItemClick(holder.item, clickedActionId);
-        }
+        listener.onBindViewHolder(holder);
     }
 
     @Override
@@ -90,9 +52,9 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
         notifyDataSetChanged();
     }
 
-    public int addItemToList(T item, SortBy sortBy) {
+    public int addItemToList(T item, Comparator comparator) {
         itemsList.add(item);
-        sort(sortBy);
+        sort(comparator);
         int position = itemsList.indexOf(item);
         notifyItemInserted(position);
         return position;
@@ -100,21 +62,19 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
 
     public void removeItemFromList(T item){
         //для корректного удаления элемента из списка реализуйте equals и hashCode у класса хранимого объекта
+        int positionInList = itemsList.indexOf(item);
         itemsList.remove(item);
         if(positionInList != -1) {
             notifyItemRemoved(positionInList);
         }
     }
 
-    public void sort(SortBy sortBy) {
-//        Comparator comparator = DummyItem.Comparators.getProperComparator(sortBy);
-//        Collections.sort(itemsList, comparator);
+    public void sort(Comparator comparator) {
+        Collections.sort(itemsList, comparator);
     }
 
-    public void sortAndNotify(SortBy sortBy) {
-//        Comparator comparator = DummyItem.Comparators.getProperComparator(sortBy);
-//        Collections.sort(itemsList, comparator);
-//        Collections.sort(itemsList, DummyItem.Comparators.getProperComparator(sortBy));
+    public void sortAndNotify(Comparator comparator) {
+        sort(comparator);
         notifyDataSetChanged();
     }
 
@@ -127,6 +87,14 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
         public ViewHolder(View view) {
             super(view);
             this.view = view;
+        }
+
+        public View getView() {
+            return view;
+        }
+
+        public T getItem() {
+            return item;
         }
     }
 }

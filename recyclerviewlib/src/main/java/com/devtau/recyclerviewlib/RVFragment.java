@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.devtau.recyclerviewlib.util.Constants;
 import com.devtau.recyclerviewlib.util.Logger;
 import java.util.ArrayList;
+import java.util.Comparator;
 /**
  * Фрагмент для самого списка
  */
@@ -52,15 +53,15 @@ public class RVFragment<T extends Parcelable> extends Fragment {
         ArrayList<T> itemsList = new ArrayList<>();
         int columnCount = Constants.DEFAULT_COLUMN_COUNT;
         int listItemLayoutId = Constants.DEFAULT_LIST_ITEM_LAYOUT;
-        SortBy sortBy = Constants.DEFAULT_SORT_BY;
+        int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
 
         if (getArguments() != null) {
             itemsList = getArguments().getParcelableArrayList(ItemFragment.ARG_ITEMS_LIST);
             columnCount = getArguments().getInt(ItemFragment.ARG_COLUMN_COUNT);
             listItemLayoutId = getArguments().getInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID);
-            sortBy = (SortBy) getArguments().getSerializable(ItemFragment.ARG_SORT_BY);
+            indexOfSortMethod = getArguments().getInt(ItemFragment.ARG_INDEX_OF_SORT_METHOD);
         }
-
+        Comparator comparator = listener.provideComparator(indexOfSortMethod);
 
         // установим адаптер списка
         if (view instanceof RecyclerView) {
@@ -71,7 +72,7 @@ public class RVFragment<T extends Parcelable> extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, columnCount));
             }
-            adapter = new MyItemRVAdapter(itemsList, listItemLayoutId, sortBy, listener);
+            adapter = new MyItemRVAdapter(itemsList, listItemLayoutId, comparator, listener);
             recyclerView.setAdapter(adapter);
         }
         return view;
@@ -80,8 +81,8 @@ public class RVFragment<T extends Parcelable> extends Fragment {
 
     //метод публичный, т.к. при работе с бд _id хранимого объекта создается только после
     //вставки записи в бд, а к ней у списка доступа нет
-    public void addItemToList(T item, SortBy sortBy) {
-        int position = adapter.addItemToList(item, sortBy);
+    public void addItemToList(T item, Comparator comparator) {
+        int position = adapter.addItemToList(item, comparator);
         recyclerView.scrollToPosition(position);
     }
 
@@ -89,8 +90,8 @@ public class RVFragment<T extends Parcelable> extends Fragment {
 
     //методы, вызываемые, если команда на сортировку/удаление/переназначечение поступает извне списка
     //обычно такие команды генерируются внутри
-    public void sort(SortBy sortBy) {
-        adapter.sortAndNotify(sortBy);
+    public void sort(Comparator comparator) {
+        adapter.sortAndNotify(comparator);
     }
 
     public void removeItemFromList(T item) {
@@ -110,6 +111,7 @@ public class RVFragment<T extends Parcelable> extends Fragment {
 
     public interface OnRVFragmentListener<T extends Parcelable> {
         //здесь действие не обрабатывается, а лишь пробрасывается дальше
-        void onListItemClick(T item, int clickedActionId);
+        void onBindViewHolder(MyItemRVAdapter.ViewHolder holder);
+        Comparator provideComparator(int indexOfSortMethod);
     }
 }

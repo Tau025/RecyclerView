@@ -12,9 +12,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.Spinner;
+import java.util.ArrayList;
+import java.util.List;
 import com.devtau.recyclerviewlib.util.Constants;
 import com.devtau.recyclerviewlib.util.Logger;
-import java.util.List;
+import com.devtau.recyclerviewlib.util.Util;
 /**
  * Фрагмент для опционально добавляемых контролов сортировки и вставки новой записи в список
  */
@@ -49,26 +51,28 @@ public class SortAndAddFragment<T extends Parcelable> extends Fragment implement
         Logger.d("SortAndAddFragment.onCreateView()");
         View rootView = inflater.inflate(R.layout.fragment_sort_and_add, container, false);
 
-        SortBy sortBy = Constants.DEFAULT_SORT_BY;
+        int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
+        ArrayList<String> comparatorsNames = Util.getDefaultComparatorsNames(getContext());
         if (getArguments() != null) {
-            sortBy = (SortBy) getArguments().getSerializable(ItemFragment.ARG_SORT_BY);
+            indexOfSortMethod = getArguments().getInt(ItemFragment.ARG_INDEX_OF_SORT_METHOD);
+            comparatorsNames = getArguments().getStringArrayList(ItemFragment.ARG_COMPARATORS_NAMES);
         }
 
-        initControls(rootView, sortBy);
+        initControls(rootView, indexOfSortMethod, comparatorsNames);
         return rootView;
     }
 
-    private void initControls(View rootView, SortBy sortBy) {
+    private void initControls(View rootView, int indexOfSortMethod, ArrayList<String> comparatorsNames) {
         spnSort = (Spinner) rootView.findViewById(R.id.spnSort);
         Button btnAdd = (Button) rootView.findViewById(R.id.btnAdd);
 
         if(spnSort != null && btnAdd != null) {
-            spnSort.setAdapter(new SpinnerAdapter(rootView.getContext()));
-            spnSort.setSelection(sortBy.getId());
+            spnSort.setAdapter(new SpinnerAdapter(rootView.getContext(), comparatorsNames));
+            spnSort.setSelection(indexOfSortMethod);
             spnSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    listener.onSpinnerItemSelected(SortBy.getById(spnSort.getSelectedItemPosition()));
+                    listener.onSpinnerItemSelected(spnSort.getSelectedItemPosition());
                 }
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {/*NOP*/}
@@ -97,15 +101,18 @@ public class SortAndAddFragment<T extends Parcelable> extends Fragment implement
 
 
     public interface OnSortAndAddFragmentListener {
-        void onSpinnerItemSelected(SortBy selectedSortBy);
+        void onSpinnerItemSelected(int indexOfSortMethod);
         void onAddNewItemDialogResult(List<String> newItemParams);
     }
 
 
 
-    public class SpinnerAdapter extends ArrayAdapter<SortBy> {
-        public SpinnerAdapter(Context context) {
-            super(context, 0, SortBy.values());
+    public class SpinnerAdapter extends ArrayAdapter<String> {
+        ArrayList<String> comparatorsNames;
+
+        public SpinnerAdapter(Context context, ArrayList<String> comparatorsNames) {
+            super(context, 0, comparatorsNames);
+            this.comparatorsNames = comparatorsNames;
         }
 
         @Override
@@ -115,7 +122,7 @@ public class SortAndAddFragment<T extends Parcelable> extends Fragment implement
                 text = (CheckedTextView) LayoutInflater.from(getContext())
                         .inflate(android.R.layout.simple_spinner_dropdown_item,  parent, false);
             }
-            text.setText(getItem(position).getDescriptionId());
+            text.setText(getItem(position));
             return text;
         }
 
@@ -126,7 +133,7 @@ public class SortAndAddFragment<T extends Parcelable> extends Fragment implement
                 text = (CheckedTextView) LayoutInflater.from(getContext())
                         .inflate(android.R.layout.simple_spinner_dropdown_item,  parent, false);
             }
-            text.setText(getItem(position).getDescriptionId());
+            text.setText(getItem(position));
             return text;
         }
     }

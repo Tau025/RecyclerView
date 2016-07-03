@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">RecyclerView</string>
+
+    <!--enum для клиентских вариантов сортировки-->
+    <string name="first_higher_price">сначала высокая цена</string>
+    <string name="first_lower_price">сначала низкая цена</string>
+    <string name="alphabetical">А - Я</string>
+    <string name="rev_alphabetical">Я - А</string>
+
+    <string name="NumberFormatException">NumberFormatException</string>
 </resources>

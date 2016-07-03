@@ -6,13 +6,16 @@ import android.os.Parcelable;
 import android.provider.BaseColumns;
 import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Comparator;
 import com.devtau.recyclerview.database.tables.DummyItemsTable;
 import com.devtau.recyclerview.util.Util;
-import com.devtau.recyclerviewlib.SortBy;
 import static com.devtau.recyclerview.database.tables.DummyItemsTable.*;
-
-public class DummyItem implements Parcelable{
+/**
+ * Класс описывает пример хранимого в клиенте, для которого нужно списковое представление
+ * класс хранимого объекта должен:
+ * 1 - переопределить методы equals() и hashCode() - для корректного удаления элемента из списка
+ * 2 - реализовать Parcelable
+ */
+public class DummyItem implements Parcelable, Comparable{
     private long id;
     private Calendar date;
     private int price;
@@ -125,56 +128,8 @@ public class DummyItem implements Parcelable{
         parcel.writeString(description);
     }
 
-
-
-    //компараторы необходимы, если вы собираетесь сортировать лист объектов этого класса
-    //ответ <0 говорит о том, что сравнение не прошло проверку и нужна перестановка
-    public static class Comparators {
-        public static Comparator<DummyItem> FIRST_FRESH = (first, second) -> {
-            long firstLong = first.getDate().getTimeInMillis();
-            long secondLong = second.getDate().getTimeInMillis();
-            int result;
-            if(secondLong < firstLong) result = -1;
-            else if(firstLong == secondLong) result = 0;
-            else result = 1;
-            return result;
-        };
-        public static Comparator<DummyItem> FIRST_OLD = (first, second) -> {
-            long firstLong = first.getDate().getTimeInMillis();
-            long secondLong = second.getDate().getTimeInMillis();
-            int result;
-            if(firstLong < secondLong) result = -1;
-            else if(firstLong == secondLong) result = 0;
-            else result = 1;
-            return result;
-        };
-        public static Comparator<DummyItem> FIRST_HIGHER_PRICE =
-                (first, second) -> second.getPrice() - first.getPrice();
-        public static Comparator<DummyItem> FIRST_LOWER_PRICE =
-                (first, second) -> first.getPrice() - second.getPrice();
-        public static Comparator<DummyItem> ALPHABETICAL =
-                (first, second) -> first.getDescription().compareTo(second.getDescription());
-        public static Comparator<DummyItem> REV_ALPHABETICAL =
-                (first, second) -> second.getDescription().compareTo(first.getDescription());
-
-        //альтернатива без лямбды
-//        public static Comparator<DummyItem> FIRST_LOWER_PRICE = new Comparator<DummyItem>() {
-//            @Override
-//            public int compare(DummyItem first, DummyItem second) {
-//                return first.getPrice() - second.getPrice();
-//            }
-//        };
-
-        public static Comparator<DummyItem> getProperComparator(SortBy sortBy) {
-            switch (sortBy) {
-                case FIRST_FRESH: return FIRST_FRESH;
-                case FIRST_OLD: return FIRST_OLD;
-                case FIRST_HIGHER_PRICE: return FIRST_HIGHER_PRICE;
-                case FIRST_LOWER_PRICE: return FIRST_LOWER_PRICE;
-                case ALPHABETICAL: return ALPHABETICAL;
-                case REV_ALPHABETICAL: return REV_ALPHABETICAL;
-                default: return FIRST_FRESH;
-            }
-        }
+    @Override
+    public int compareTo(Object o) {
+        return 0;
     }
 }

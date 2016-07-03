@@ -1,10 +1,12 @@
 package com.devtau.recyclerviewlib.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
-
+import com.devtau.recyclerviewlib.R;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -12,6 +14,19 @@ public abstract class Util {
     //даты храним как строки в соответствии с этим форматтером
     //не работает напрямую с Calendar. его нужно сначала перевести в Date
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.UK);
+
+
+    public static ArrayList<String> getDefaultComparatorsNames(Context context) {
+        Resources res = context.getResources();
+        ArrayList<String> comparatorsNames = new ArrayList<>();
+        comparatorsNames.add(res.getString(R.string.first_fresh));
+        comparatorsNames.add(res.getString(R.string.first_old));
+        comparatorsNames.add(res.getString(R.string.first_higher_price));
+        comparatorsNames.add(res.getString(R.string.first_lower_price));
+        comparatorsNames.add(res.getString(R.string.alphabetical));
+        comparatorsNames.add(res.getString(R.string.rev_alphabetical));
+        return comparatorsNames;
+    }
 
     public static void loopChildren(ViewGroup parent, View.OnClickListener onClickListener) {
         for (int i = parent.getChildCount() - 1; i >= 0; i--) {
