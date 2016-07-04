@@ -19,7 +19,6 @@ import com.devtau.recyclerview.util.Util;
 import com.devtau.recyclerviewlib.RVHelper;
 import com.devtau.recyclerviewlib.RVHelperInterface;
 import com.devtau.recyclerviewlib.MyItemRVAdapter.ViewHolder;
-import com.devtau.recyclerviewlib.util.Constants;
 /**
  * Пример использования библиотеки RVHelper клиентом
  */
@@ -37,20 +36,27 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //получим ссылку на базу данных
         dummyItemsSource = new DataSource(this).getDummyItemsSource();
+        initRecyclers(savedInstanceState);
+    }
+
+    private void initRecyclers(Bundle savedInstanceState) {
+        //запросим из бд список, который нам нужно показать
         ArrayList<DummyItem> itemsList = dummyItemsSource.getItemsList();
 
+        //подготовим компараторы
         HashMap<Integer, Comparator> comparators = DummyItemComparators.getComparatorsMap();
         ArrayList<String> comparatorsNames = DummyItemComparators.getComparatorsNames(this);
-        int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
+        int indexOfSortMethod = com.devtau.recyclerviewlib.util.Constants.DEFAULT_SORT_BY;
         if(savedInstanceState != null) {
             indexOfSortMethod = savedInstanceState.getInt(ARG_INDEX_OF_SORT_METHOD);
         }
+
+        //соберем из подготовленных вводных данных хелпер(ы)
         rvHelper = RVHelper.Builder.<DummyItem> start(this, R.id.rv_helper_placeholder).setList(itemsList, comparators)
-                .withColumnCount(1)
                 .withListItemLayoutId(R.layout.list_item)
                 .withSortSpinner(comparatorsNames, indexOfSortMethod)
-                .withAddButton()
                 .build();
         rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
 

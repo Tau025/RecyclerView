@@ -18,6 +18,8 @@ import com.devtau.recyclerviewlib.util.Util;
  * класс хранимого объекта должен:
  * 1 - переопределить методы equals() и hashCode() - для корректного удаления элемента из списка
  * 2 - реализовать Parcelable
+ * Если вы хотите использовать спиннер сортировки, создайте в strings список названий для каждого варианта
+ * Посмотрите пример организации app/build.gradle чтобы применить возможности JDK 1.8
  */
 public class RVHelper<T extends Parcelable> {
     private ItemFragment itemFragment;
