@@ -78,7 +78,17 @@ public class MyItemRVAdapter<T extends Parcelable> extends RecyclerView.Adapter<
         notifyDataSetChanged();
     }
     private void sort(Comparator comparator) {
-        Collections.sort(itemsList, comparator);
+        //сортировка будет применяться только если клиент передаст компаратор в колбэке provideComparator()
+        if(comparator != null) {
+            Collections.sort(itemsList, comparator);
+        } else {
+            Collections.sort(itemsList, new Comparator<T>() {
+                @Override
+                public int compare(T t, T t1) {
+                    return 0;
+                }
+            });
+        }
     }
 
 

@@ -8,4 +8,6 @@
     <string name="rev_alphabetical">Z - A</string>
 
     <string name="NumberFormatException">NumberFormatException</string>
+    <string name="single_column_list_example">Single column list example</string>
+    <string name="double_column_list_example">Double column list example</string>
 </resources>

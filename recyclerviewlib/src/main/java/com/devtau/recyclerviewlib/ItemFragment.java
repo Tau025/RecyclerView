@@ -13,7 +13,6 @@ import com.devtau.recyclerviewlib.util.Logger;
 import com.devtau.recyclerviewlib.util.Util;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 /**
  * Фрагмент обобщающий сортировку, вставку новой записи с отображением самого списка
@@ -28,7 +27,6 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     public static final String ARG_LIST_ITEM_LAYOUT_ID = "listItemLayoutId";
     public static final String ARG_INCLUDE_ADD_BUTTON_IN_LAYOUT = "includeAddButtonInLayout";
     public static final String ARG_INCLUDE_SPINNER_IN_LAYOUT = "includeSpinnerInLayout";
-    public static final String ARG_COMPARATORS = "comparators";
     public static final String ARG_COMPARATORS_NAMES = "comparatorsNames";
     public static final String ARG_INDEX_OF_SORT_METHOD = "indexOfSortMethod";
 
@@ -36,7 +34,6 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     private RVHelperInterface listener;
     boolean includeSpinnerInLayout = Constants.DEFAULT_ADD_SPINNER;
     private int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
-    private HashMap<Integer, Comparator> comparators;
 
     private SpinnerFragment spinnerFragment;
     private RVFragment rvFragment;
@@ -77,7 +74,6 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
         if (getArguments() != null) {
             rvHelperId = getArguments().getInt(ARG_RV_HELPER_ID);
             itemsList = getArguments().getParcelableArrayList(ARG_ITEMS_LIST);
-            comparators = (HashMap<Integer, Comparator>) getArguments().getSerializable(ARG_COMPARATORS);
             columnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             listItemLayoutId = getArguments().getInt(ARG_LIST_ITEM_LAYOUT_ID);
             includeAddButtonInLayout = getArguments().getBoolean(ARG_INCLUDE_ADD_BUTTON_IN_LAYOUT);
@@ -148,7 +144,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
 
     //вставляет новую строку в лист
     public void addItemToList(T item) {
-        rvFragment.addItemToList(item, comparators.get(indexOfSortMethod));
+        rvFragment.addItemToList(item, listener.provideComparator(indexOfSortMethod));
     }
 
     //удаляет строку из листа
@@ -166,7 +162,7 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     @Override
     public void onSpinnerItemSelected(int indexOfSortMethod) {
         this.indexOfSortMethod = indexOfSortMethod;
-        rvFragment.sort(comparators.get(indexOfSortMethod));
+        rvFragment.sort(listener.provideComparator(indexOfSortMethod));
     }
 
 
@@ -187,6 +183,6 @@ public class ItemFragment<T extends Parcelable> extends Fragment implements
     //возвращает Comparator по его индексу. метод необходим, т.к. Comparator не упаковать в Bundle
     @Override
     public Comparator provideComparator(int indexOfSortMethod) {
-        return comparators.get(indexOfSortMethod);
+        return listener.provideComparator(indexOfSortMethod);
     }
 }

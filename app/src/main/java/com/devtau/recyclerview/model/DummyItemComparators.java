@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import com.devtau.recyclerview.R;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 /**
  * Компараторы необходимы, если вы собираетесь сортировать лист объектов этого класса
  * ответ <0 говорит о том, что сравнение не прошло проверку и нужна перестановка
@@ -46,15 +45,16 @@ public class DummyItemComparators {
 //            }
 //        };
 
-    public static HashMap<Integer, Comparator> getComparatorsMap() {
-        HashMap<Integer, Comparator> comparators = new HashMap<>();
-        comparators.put(0, FIRST_FRESH);
-        comparators.put(1, FIRST_OLD);
-        comparators.put(2, FIRST_HIGHER_PRICE);
-        comparators.put(3, FIRST_LOWER_PRICE);
-        comparators.put(4, ALPHABETICAL);
-        comparators.put(5, REV_ALPHABETICAL);
-        return comparators;
+    public static Comparator provideComparator(int indexOfSortMethod) {
+        switch (indexOfSortMethod) {
+            case 0: return FIRST_FRESH;
+            case 1: return FIRST_OLD;
+            case 2: return FIRST_HIGHER_PRICE;
+            case 3: return FIRST_LOWER_PRICE;
+            case 4: return ALPHABETICAL;
+            case 5: return REV_ALPHABETICAL;
+            default: return FIRST_FRESH;
+        }
     }
 
     public static ArrayList<String> getComparatorsNames(Context context) {

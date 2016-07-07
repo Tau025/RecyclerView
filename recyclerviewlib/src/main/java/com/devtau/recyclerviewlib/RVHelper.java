@@ -16,8 +16,7 @@ import com.devtau.recyclerviewlib.util.Util;
  * Выберите модуль библиотеки recyclerviewlib из скачанного проекта.
  *
  * Клиент создает экземпляр хелпера посредством его Builder и реализует интерфейс RVHelperInterface.
- * Минимальный список параметров - это лист объектов и HashMap минимум из одного компаратора.
- * Если в HashMap больше одного компаратора, по умолчаню будет использоваться нулевой.
+ * Минимальный список параметров - это лист объектов.
  *
  * Класс хранимого объекта должен:
  * 1 - переопределить методы equals() и hashCode() - для корректного удаления и вставки;
@@ -26,6 +25,7 @@ import com.devtau.recyclerviewlib.util.Util;
  * При необходимости хелпер добавит в разметку спиннер для сортировки и кнопку для добавления новых записей.
  * Для спиннера создайте в strings список названий для каждого варианта.
  * Компараторы удобно реализовывать отдельным классом. Пример реализации есть в классе DummyItemComparators.
+ *
  *
  * Если в списке должно быть больше одной колонки, нужное количество можно передать в методе withColumnCount().
  * Клиент может создать произвольную разметку и передать ее файл билдеру в методе withListItemLayoutId().
@@ -44,7 +44,6 @@ public class RVHelper<T extends Parcelable> {
         Logger.d("builder.rvHelperId: " + String.valueOf(builder.rvHelperId));
         args.putInt(ItemFragment.ARG_RV_HELPER_ID, builder.rvHelperId);
         args.putParcelableArrayList(ItemFragment.ARG_ITEMS_LIST, builder.itemsList);
-        args.putSerializable(ItemFragment.ARG_COMPARATORS, builder.comparators);
         args.putInt(ItemFragment.ARG_COLUMN_COUNT, builder.columnCount);
         args.putInt(ItemFragment.ARG_LIST_ITEM_LAYOUT_ID, builder.listItemLayoutId);
         args.putBoolean(ItemFragment.ARG_INCLUDE_ADD_BUTTON_IN_LAYOUT, builder.includeAddButtonInLayout);
@@ -108,7 +107,6 @@ public class RVHelper<T extends Parcelable> {
         private boolean includeAddButtonInLayout = Constants.DEFAULT_INCLUDE_ADD_BUTTON;
         //4 параметра ниже нужны для использования сортировки
         private boolean includeSpinnerInLayout = Constants.DEFAULT_ADD_SPINNER;
-        private HashMap<Integer, Comparator> comparators;//нет дефолта
         private ArrayList<String> comparatorsNames;//дефолт назначается в конструкторе
         private int indexOfSortMethod = Constants.DEFAULT_SORT_BY;
 
@@ -124,9 +122,8 @@ public class RVHelper<T extends Parcelable> {
             return newBuilder;
         }
 
-        public Builder setList(ArrayList<T> itemsList, HashMap<Integer, Comparator> comparators) {
+        public Builder setList(ArrayList<T> itemsList) {
             this.itemsList = itemsList;
-            this.comparators = comparators;
             return this;
         }
 

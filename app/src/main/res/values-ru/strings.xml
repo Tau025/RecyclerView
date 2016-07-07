@@ -8,4 +8,6 @@
     <string name="rev_alphabetical">Я - А</string>
 
     <string name="NumberFormatException">NumberFormatException</string>
+    <string name="single_column_list_example">Пример списка в одну колонку</string>
+    <string name="double_column_list_example">Пример списка в две колонки</string>
 </resources>

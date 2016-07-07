@@ -8,7 +8,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import com.devtau.recyclerview.database.DataSource;
 import com.devtau.recyclerview.database.sources.DummyItemsSource;
@@ -45,8 +44,7 @@ public class MainActivity extends AppCompatActivity implements
         //запросим из бд список, который нам нужно показать
         ArrayList<DummyItem> itemsList = dummyItemsSource.getItemsList();
 
-        //подготовим компараторы
-        HashMap<Integer, Comparator> comparators = DummyItemComparators.getComparatorsMap();
+        //подготовим названия компараторов для спиннера и выбранный вариант
         ArrayList<String> comparatorsNames = DummyItemComparators.getComparatorsNames(this);
         int indexOfSortMethod = com.devtau.recyclerviewlib.util.Constants.DEFAULT_SORT_BY;
         if(savedInstanceState != null) {
@@ -54,13 +52,13 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         //соберем из подготовленных вводных данных хелпер(ы)
-        rvHelper = RVHelper.Builder.<DummyItem> start(this, R.id.rv_helper_placeholder).setList(itemsList, comparators)
+        rvHelper = RVHelper.Builder.<DummyItem> start(this, R.id.rv_helper_placeholder).setList(itemsList)
                 .withListItemLayoutId(R.layout.list_item)
                 .withSortSpinner(comparatorsNames, indexOfSortMethod)
                 .build();
         rvHelper.addItemFragmentToLayout(this, R.id.rv_helper_placeholder);
 
-        rvHelper2 = RVHelper.Builder.<DummyItem> start(this, R.id.rv_helper_placeholder2).setList(itemsList, comparators)
+        rvHelper2 = RVHelper.Builder.<DummyItem> start(this, R.id.rv_helper_placeholder2).setList(itemsList)
                 .withColumnCount(2)
                 .withListItemLayoutId(R.layout.list_item)
                 .withSortSpinner(comparatorsNames, indexOfSortMethod)
@@ -73,13 +71,14 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int rvHelperId) {
-        //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях CardView
+        //здесь выбираем, какие поля хранимого объекта отобразятся в каких частях строки
+        //TextView в разметке по умолчанию такие: tvMain, tvAdditional1, tvAdditional2
         final DummyItem item = (DummyItem) holder.getItem();
 
-        ((TextView) holder.getView().findViewById(R.id.price)).setText(String.valueOf(item.getPrice()));
-        ((TextView) holder.getView().findViewById(R.id.description)).setText(item.getDescription());
+        ((TextView) holder.getView().findViewById(R.id.tvMain)).setText(item.getDescription());
+        ((TextView) holder.getView().findViewById(R.id.tvAdditional1)).setText(String.valueOf(item.getPrice()));
         String dateString = Util.getStringDateTimeFromCal(item.getDate());
-        ((TextView) holder.getView().findViewById(R.id.date)).setText(dateString);
+        ((TextView) holder.getView().findViewById(R.id.tvAdditional2)).setText(dateString);
         ImageButton btnDelete = ((ImageButton) holder.getView().findViewById(R.id.btnDelete));
 
         //здесь устанавливаем слушатели
@@ -136,6 +135,13 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 break;
         }
+    }
+
+    @Override
+    public Comparator provideComparator(int indexOfSortMethod) {
+        //возвращает Comparator по его индексу. метод необходим, т.к. Comparator не упаковать в Bundle
+        //допускается возвращать null. тогда новые строки будут просто добавляться в конец списка
+        return DummyItemComparators.provideComparator(indexOfSortMethod);
     }
 
     @Override
